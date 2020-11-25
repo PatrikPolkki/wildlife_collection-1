@@ -14,6 +14,7 @@ const registerForm = document.querySelector('#register-form');
 const loginForm = document.querySelector('#login-form');
 const but = document.querySelector('#but');
 const but2 = document.querySelector('#but2');
+const but3 = document.querySelector('#but3');
 //const modalForm = document.querySelector('#interaction-form');
 //const modalInput = document.querySelector('#modal-input');
 //const modalp = document.querySelector('#modalp');
@@ -31,8 +32,10 @@ console.log(`Logged in user: ${user_id}`);
 closeInteractionModal.addEventListener('click', (evt) => {
   interactionModal.style.display = 'none';
   modalContent.removeChild(document.querySelector('#modalPic'));
-  modalContent.removeChild(document.querySelector('#interactionModalLikeButton'));
-  modalContent.removeChild(document.querySelector('#interactionModalDislikeButton'));
+  modalContent.removeChild(
+      document.querySelector('#interactionModalLikeButton'));
+  modalContent.removeChild(
+      document.querySelector('#interactionModalDislikeButton'));
   modalContent.removeChild(document.querySelector('#modalp'));
   modalContent.removeChild(document.querySelector('#modalForm'));
 });
@@ -45,166 +48,63 @@ const createPicCards = async (pics) => {
 
     for await (const pic of pics) {
 
-      //Fetch to get interactions, likes and comments. result --> interactions of photos
-      //await Promise.resolve(getLikes(pic.pic_id)).then((result) => {
+      const img = document.createElement('img');
 
-        const img = document.createElement('img');
+      img.src = url + '/thumbnails/' + pic.filename;
 
-        img.src = url + '/thumbnails/' + pic.filename;
+      //Create and Display modal on image click
+      img.addEventListener('click', async (evt) => {
+        console.log(`Clicked pic with an id of: ${pic.pic_id}`);
+        interactionModal.style.display = 'block';
 
-        //Create and Display modal on image click
-        img.addEventListener('click', async (evt) => {
-          console.log(`Clicked pic with an id of: ${pic.pic_id}`);
-          interactionModal.style.display = 'block';
+        const modalp = document.createElement('p');
+        modalp.id = 'modalp';
 
-          const modalp = document.createElement('p');
-          modalp.id = 'modalp';
+        const interactionModalLikeButton = document.createElement('span');
+        interactionModalLikeButton.id = 'interactionModalLikeButton';
 
-          const interactionModalLikeButton = document.createElement('span');
-          interactionModalLikeButton.id = 'interactionModalLikeButton';
+        const interactionModalDislikeButton = document.createElement('span');
+        interactionModalDislikeButton.id = 'interactionModalDislikeButton';
 
-          const interactionModalDislikeButton = document.createElement('span');
-          interactionModalDislikeButton.id = 'interactionModalDislikeButton';
+        const modalForm = document.createElement('form');
+        modalForm.id = 'modalForm';
 
-          const modalForm = document.createElement('form');
-          modalForm.id = 'modalForm';
+        const modalInput = document.createElement('input');
+        modalInput.id = 'modalInput';
+        modalInput.style.width = '50%';
+        modalInput.style.height = '5%';
+        modalInput.id = 'modal-input';
+        modalInput.type = 'text';
+        modalInput.name = 'comment';
+        modalInput.pattern = '.{3,}';
+        modalInput.placeholder = 'Write your comment about this photo here';
+        modalInput.required = true;
 
-          const modalInput = document.createElement('input');
-          modalInput.id = 'modalInput';
-          modalInput.style.width = '50%';
-          modalInput.style.height = '5%';
-          modalInput.id = 'modal-input';
-          modalInput.type = 'text';
-          modalInput.name = 'comment';
-          modalInput.pattern = '.{3,}';
-          modalInput.placeholder = 'Write your comment about this photo here';
-          modalInput.required = true;
+        const modalButton = document.createElement('button');
+        modalButton.id = 'modalButton';
+        modalButton.innerHTML = 'Comment';
+        modalForm.appendChild(modalInput);
+        modalForm.appendChild(modalButton);
 
-          const modalButton = document.createElement('button');
-          modalButton.id = 'modalButton';
-          modalButton.innerHTML = 'Comment';
-          modalForm.appendChild(modalInput);
-          modalForm.appendChild(modalButton);
+        modalContent.appendChild(modalForm);
+        modalContent.appendChild(modalp);
+        modalContent.appendChild(interactionModalLikeButton);
+        modalContent.appendChild(interactionModalDislikeButton);
 
-          modalContent.appendChild(modalForm);
-          modalContent.appendChild(modalp);
-          modalContent.appendChild(interactionModalLikeButton);
-          modalContent.appendChild(interactionModalDislikeButton);
+        //Get up to date likes and comments from database then assign the value to elements
+        const updatedLikes = await getLikes(pic.pic_id);
+        console.log(updatedLikes);
+        interactionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
+        interactionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
 
-          //Get up to date likes and comments from database then assign the value to elements
-          const updatedLikes = await getLikes(pic.pic_id);
-          console.log(updatedLikes);
-          interactionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
-          interactionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
-
-          const comments = await getComments(pic.pic_id);
-          console.log(comments);
-          comments.forEach((comment) => {
-            modalp.innerHTML += `<p>${comment.date} ${comment.name} ${comment.lastname}: ${comment.comment}</p>`;
-          });
-
-          //Like chosen photo
-          interactionModalLikeButton.addEventListener('click', async (evt) => {
-            evt.preventDefault();
-
-            console.log(pic.pic_id);
-            try {
-              const options = {
-                method: 'PUT',
-                headers: {
-                  'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-                },
-              };
-              console.log(options);
-              const response = await fetch(
-                  url + '/likes/incrementlike/' + pic.pic_id, options);
-              const json = await response.json();
-              console.log('add like response', json);
-
-              //Fetch the updated like and update like amount
-              const updatedLikes = await getLikes(pic.pic_id);
-              interactionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
-              //... to outside the modal too
-              likes.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
-
-            } catch (e) {
-              console.log(e.message);
-            }
-          });
-
-
-          //Dislike chosen photo
-          interactionModalDislikeButton.addEventListener('click', async (evt) => {
-            evt.preventDefault();
-
-            console.log(pic.pic_id);
-            try {
-              const options = {
-                method: 'PUT',
-                headers: {
-                  'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-                },
-              };
-              console.log(options);
-              const response = await fetch(
-                  url + '/likes/incrementdislike/' + pic.pic_id, options);
-              const json = await response.json();
-              console.log('add like response', json);
-
-              //Fetch the updated dislike and update dislike amount
-              const updatedLikes = await getLikes(pic.pic_id);
-              interactionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
-              //... to outside the modal too
-              dislikes.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
-
-            } catch (e) {
-              console.log(e.message);
-            }
-          });
-
-          //Post a comment to selected photo
-          modalForm.addEventListener('submit', async (evt) => {
-            evt.preventDefault();
-            const data = serializeJson(modalForm);
-            const fetchOptions = {
-              method: 'POST',
-              headers: {
-                'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(data),
-            };
-            console.log(fetchOptions);
-            const response = await fetch(
-                url + `/comments/${pic.pic_id}/${user_id}`, fetchOptions);
-            const json = await response.json();
-            console.log('add comment response', json);
-
-            const comments = await getComments(pic.pic_id);
-            console.log(comments);
-            modalp.innerHTML = '';
-            comments.forEach((comment) => {
-              modalp.innerHTML += `<p>${comment.date} ${comment.name} ${comment.lastname}: ${comment.comment}</p>`;
-            });
-          });
-
-          //Append clicked image to the opening modal
-          const modalPic = document.createElement('img');
-          modalPic.src = img.src = url + '/thumbnails/' + pic.filename;
-          modalPic.id = 'modalPic';
-          modalContent.insertBefore(modalPic, modalContent.firstChild);
-
+        const comments = await getComments(pic.pic_id);
+        console.log(comments);
+        comments.forEach((comment) => {
+          modalp.innerHTML += `<p>${comment.date} ${comment.name} ${comment.lastname}: ${comment.comment}</p>`;
         });
 
-
-        const likes = document.createElement('p');
-        const dislikes = document.createElement('span')
-        const updatedLikes = await getLikes(pic.pic_id);
-        likes.innerHTML = updatedLikes[0].likes + '&#x1F44D;';
-        dislikes.innerHTML = updatedLikes[0].dislikes + '&#128078;';
-
-        // Incrementing for the main like button outside of modal
-        likes.addEventListener('click', async (evt) => {
+        //Like chosen photo
+        interactionModalLikeButton.addEventListener('click', async (evt) => {
           evt.preventDefault();
 
           console.log(pic.pic_id);
@@ -221,8 +121,10 @@ const createPicCards = async (pics) => {
             const json = await response.json();
             console.log('add like response', json);
 
-            //Fetch the updated like and update like amount to the webpage too
+            //Fetch the updated like and update like amount
             const updatedLikes = await getLikes(pic.pic_id);
+            interactionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
+            //... to outside the modal too
             likes.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
 
           } catch (e) {
@@ -230,6 +132,101 @@ const createPicCards = async (pics) => {
           }
         });
 
+        //Dislike chosen photo
+        interactionModalDislikeButton.addEventListener('click', async (evt) => {
+          evt.preventDefault();
+
+          console.log(pic.pic_id);
+          try {
+            const options = {
+              method: 'PUT',
+              headers: {
+                'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+              },
+            };
+            console.log(options);
+            const response = await fetch(
+                url + '/likes/incrementdislike/' + pic.pic_id, options);
+            const json = await response.json();
+            console.log('add like response', json);
+
+            //Fetch the updated dislike and update dislike amount
+            const updatedLikes = await getLikes(pic.pic_id);
+            interactionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
+            //... to outside the modal too
+            dislikes.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
+
+          } catch (e) {
+            console.log(e.message);
+          }
+        });
+
+        //Post a comment to selected photo
+        modalForm.addEventListener('submit', async (evt) => {
+          evt.preventDefault();
+          const data = serializeJson(modalForm);
+          const fetchOptions = {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          };
+          console.log(fetchOptions);
+          const response = await fetch(
+              url + `/comments/${pic.pic_id}/${user_id}`, fetchOptions);
+          const json = await response.json();
+          console.log('add comment response', json);
+
+          const comments = await getComments(pic.pic_id);
+          console.log(comments);
+          modalp.innerHTML = '';
+          comments.forEach((comment) => {
+            modalp.innerHTML += `<p>${comment.date} ${comment.name} ${comment.lastname}: ${comment.comment}</p>`;
+          });
+        });
+
+        //Append clicked image to the opening modal
+        const modalPic = document.createElement('img');
+        modalPic.src = img.src = url + '/thumbnails/' + pic.filename;
+        modalPic.id = 'modalPic';
+        modalContent.insertBefore(modalPic, modalContent.firstChild);
+
+      });
+
+      const likes = document.createElement('p');
+      const dislikes = document.createElement('span');
+      const updatedLikes = await getLikes(pic.pic_id);
+      likes.innerHTML = updatedLikes[0].likes + '&#x1F44D;';
+      dislikes.innerHTML = updatedLikes[0].dislikes + '&#128078;';
+
+      // Incrementing for the main like button outside of modal
+      likes.addEventListener('click', async (evt) => {
+        evt.preventDefault();
+
+        console.log(pic.pic_id);
+        try {
+          const options = {
+            method: 'PUT',
+            headers: {
+              'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+            },
+          };
+          console.log(options);
+          const response = await fetch(
+              url + '/likes/incrementlike/' + pic.pic_id, options);
+          const json = await response.json();
+          console.log('add like response', json);
+
+          //Fetch the updated like and update like amount to the webpage too
+          const updatedLikes = await getLikes(pic.pic_id);
+          likes.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
+
+        } catch (e) {
+          console.log(e.message);
+        }
+      });
 
       // Incrementing for the main dislike button outside of modal
       dislikes.addEventListener('click', async (evt) => {
@@ -257,29 +254,30 @@ const createPicCards = async (pics) => {
         }
       });
 
-        const description = document.createElement('p');
-        description.innerHTML = pic.description;
+      const description = document.createElement('p');
+      description.innerHTML = pic.description;
 
-        const owner = document.createElement('p');
-        owner.innerHTML = pic.owner;
+      const owner = document.createElement('p');
+      const postDate = pic.post_date.replace('T', ' ').replace('Z', '');
+      owner.innerHTML = `Posted by ${pic.name} ${pic.lastname} at ${postDate}`;
 
-        const coords = document.createElement('p');
-        coords.innerHTML = pic.coords;
+      const coords = document.createElement('p');
+      coords.innerHTML = pic.coords;
 
-        const date = document.createElement('p');
-        date.innerHTML = pic.date.replace('T', ' ').replace('Z', '');
+      const date = document.createElement('p');
+      const photoTakenDate = pic.date.replace('T', ' ').replace('Z', '');
+      date.innerHTML = `Photo taken: ${photoTakenDate}`;
 
-        const li = document.createElement('li');
+      const li = document.createElement('li');
 
-        li.appendChild(img);
-        li.appendChild(likes);
-        li.appendChild(dislikes);
-        li.appendChild(description);
-        li.appendChild(owner);
-        li.appendChild(coords);
-        li.appendChild(date);
-        picsList.appendChild(li);
- //     });
+      li.appendChild(img);
+      li.appendChild(likes);
+      li.appendChild(dislikes);
+      li.appendChild(description);
+      li.appendChild(owner);
+      li.appendChild(coords);
+      li.appendChild(date);
+      picsList.appendChild(li);
 
     }
 
@@ -288,6 +286,7 @@ const createPicCards = async (pics) => {
   }
 };
 
+// Returns all pics starting from newest
 const getAllPicks = async () => {
   try {
     const options = {
@@ -304,7 +303,23 @@ const getAllPicks = async () => {
   }
 };
 
-//getAllPicks();
+// Get all pikes by their like count
+const getAllPicksByMostLikes = async () => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/pic/mostlikes', options);
+    const pics = await response.json();
+    console.log(pics);
+    await createPicCards(pics);
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+
 
 // get users
 const getUsers = async () => {
@@ -323,8 +338,7 @@ const getUsers = async () => {
   }
 };
 
-
-// Create a pic and interaction related to that pic
+// Create a pic and likes related to that pic
 picForm.addEventListener('submit', async (evt) => {
   //Create the pic
   evt.preventDefault();
@@ -430,13 +444,6 @@ const getPicsByOwner = async () => {
   }
 };
 
-//Search for pics owned by logged in user
-but.addEventListener('click', async (evt) => {
-  evt.preventDefault();
-  //await getPicsByOwner();
-  await getAllPicks();
-});
-
 //Logout logged in user
 logOut.addEventListener('click', async (evt) => {
   evt.preventDefault();
@@ -531,12 +538,24 @@ if (isToken) {
   console.log('No token, log in plz');
 }
 
+//Search for pics owned by logged in user
+but.addEventListener('click', async (evt) => {
+  evt.preventDefault();
+  //await getPicsByOwner();
+  await getAllPicks();
+});
+
 but2.addEventListener('click', async (evt) => {
   evt.preventDefault();
   let date = new Date();
-  date =date.toISOString().split('T')[0] + ' '
-  + date.toTimeString().split(' ')[0];
+  date = date.toISOString().split('T')[0] + ' '
+      + date.toTimeString().split(' ')[0];
   console.log(date);
+});
+
+but3.addEventListener('click', async (evt) => {
+  evt.preventDefault();
+  await getAllPicksByMostLikes()
 });
 
 

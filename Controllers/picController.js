@@ -6,9 +6,14 @@ const ImageMeta = require('../utils/imageMeta');
 const {makeThumbnail} = require('../Utils/resize');
 
 const pic_list_get = async (req, res) => {
-  const users = await picModel.getAllPics();
-  await res.json(users);
+  const pics = await picModel.getAllPics();
+  await res.json(pics);
 };
+
+const pic_list_get_by_most_likes = async (req, res) => {
+  const pics = await picModel.getPicsByMostLikes();
+  await res.json(pics);
+}
 
 const pic_create = async (req, res) => {
   //here we will create a pic with data coming from req
@@ -31,6 +36,12 @@ const pic_create = async (req, res) => {
   const dateTimeOriginal = await ImageMeta.getDateTimeOriginal(req.file.path);
   console.log('dateTimeOriginal', dateTimeOriginal);
   req.body.dateTimeOriginal = dateTimeOriginal;
+
+  //get post_date = current time
+  let date = new Date();
+  date = date.toISOString().split('T')[0] + ' '
+      + date.toTimeString().split(' ')[0];
+  req.body.postDate = date;
 
   //const id = await picModel.insertPic(req);     //Returns an ID aswell
   const id = await picModel.insertPic(req);
@@ -65,5 +76,6 @@ module.exports = {
   pic_list_get,
   pic_create,
   make_thumbnail,
-  pic_get_by_owner
+  pic_get_by_owner,
+  pic_list_get_by_most_likes
 };
