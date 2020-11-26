@@ -29,6 +29,8 @@ const injectFile = (req, res, next) => {
 router.get('/', picController.pic_list_get);
 
 router.get('/mostlikes', picController.pic_list_get_by_most_likes)
+
+router.get('/search/:input', picController.pic_list_get_by_search)
 /*
 router.route('/')
     //.get(picController.pic_list_get)

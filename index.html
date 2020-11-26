@@ -19,8 +19,8 @@
 
 <button id="cookieButton">Set cookie</button>
 <button id="searchCookie">search cookie</button>
-<button id="but">Display all the pics</button>
-<button id="but2">Test date time</button>
+<button id="but">Display all the pics ordered by newest</button>
+<button id="but2">Display current user's photos</button>
 <button id="but3">Search all by most liked</button>
 
 <header style="display: none">
@@ -51,7 +51,6 @@
         <p id="user-info"></p>
         <button>Log out</button>
     </header>
-
 
 
     <div>
@@ -93,6 +92,15 @@
         </form>
     </div>
 
+    <div>
+        <form id="pic-search-form">
+            <input style="width: 50%; height: 5%" id="search-input" type="text" name="comment" pattern=".{3,}"
+                   placeholder="Search for photos..." required
+                   oninvalid="this.setCustomValidity('Input has to be atleast 3 characters long')"
+                   oninput="this.setCustomValidity('')">
+            <button id="pic-search-button" type="submit">Search photos</button>
+        </form>
+    </div>
 
     <ul id="pics-list">
         <!-- Pictures go here-->
@@ -100,9 +108,9 @@
 
 
 </main>
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
 <script src="./Frontend/index.js"></script>
 <script src="./Frontend/serialize.js"></script>
-<script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
 
 
 </body>

@@ -15,6 +15,13 @@ const pic_list_get_by_most_likes = async (req, res) => {
   await res.json(pics);
 }
 
+const pic_list_get_by_search = async (req, res) => {
+  const input = '%' + req.params.input + '%';
+  console.log(input);
+  const pics = await picModel.getPicsBySearch(input)
+  await res.json(pics);
+}
+
 const pic_create = async (req, res) => {
   //here we will create a pic with data coming from req
   console.log('picContoller pic_create', req.body, req.file, req.params.id);
@@ -77,5 +84,6 @@ module.exports = {
   pic_create,
   make_thumbnail,
   pic_get_by_owner,
-  pic_list_get_by_most_likes
+  pic_list_get_by_most_likes,
+  pic_list_get_by_search
 };

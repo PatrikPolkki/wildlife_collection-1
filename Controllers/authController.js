@@ -53,6 +53,7 @@ const user_create_post = async (req, res, next) => {
 
 const logout = (req, res) => {
   req.logout();
+  res.clearCookie('loggedUser');
   res.json({message: 'logout'});
 };
 

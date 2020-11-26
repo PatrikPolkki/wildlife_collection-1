@@ -1,6 +1,5 @@
 'use strict';
 const url = 'http://localhost:3000';
-//Get all cookies and present them in an object for easy dot notation access
 let cookies = document.cookie.split(';').
     map(cookie => cookie.split('=')).
     reduce((accumulator, [key, value]) => ({
@@ -12,6 +11,7 @@ picsList.style.listStyle = 'none';
 const picForm = document.querySelector('#add-pic-form');
 const registerForm = document.querySelector('#register-form');
 const loginForm = document.querySelector('#login-form');
+const searchForm = document.querySelector('#pic-search-form');
 const but = document.querySelector('#but');
 const but2 = document.querySelector('#but2');
 const but3 = document.querySelector('#but3');
@@ -38,6 +38,7 @@ closeInteractionModal.addEventListener('click', (evt) => {
       document.querySelector('#interactionModalDislikeButton'));
   modalContent.removeChild(document.querySelector('#modalp'));
   modalContent.removeChild(document.querySelector('#modalForm'));
+  body.style.overflow = 'visible'
 });
 
 //Depending what is given as parameter into this function decides what cards are rendered
@@ -54,6 +55,7 @@ const createPicCards = async (pics) => {
 
       //Create and Display modal on image click
       img.addEventListener('click', async (evt) => {
+        body.style.overflow = 'hidden';
         console.log(`Clicked pic with an id of: ${pic.pic_id}`);
         interactionModal.style.display = 'block';
 
@@ -259,10 +261,36 @@ const createPicCards = async (pics) => {
 
       const owner = document.createElement('p');
       const postDate = pic.post_date.replace('T', ' ').replace('Z', '');
-      owner.innerHTML = `Posted by ${pic.name} ${pic.lastname} at ${postDate}`;
+      owner.innerHTML = `Posted by ${pic.name} ${pic.lastname} on ${postDate}`;
 
       const coords = document.createElement('p');
-      coords.innerHTML = pic.coords;
+      const modifiedCoords = pic.coords.replace('[', '').replace(']', '');
+      coords.innerHTML = modifiedCoords;
+
+      /*
+            try {
+              const modifiedCoords = JSON.parse(pic.coords)
+              coords.innerHTML = modifiedCoords;
+              console.log('modified ', modifiedCoords);
+              console.log('coords', pic.coords);
+              const map =  await new mapboxgl.Map({
+                container: 'map', // container id
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [modifiedCoords], // starting position
+                zoom: 9, // starting zoom
+              });
+            } catch (e){
+              console.log(e.error);
+            }
+
+
+            const addMarker = async (coords) => {
+              map.setCenter(coords);
+              const marker = new mapboxgl.Marker().setLngLat(coords).addTo(map);
+            };
+
+            await addMarker(24.818055555555556, 60.220555555555556);
+          */
 
       const date = document.createElement('p');
       const photoTakenDate = pic.date.replace('T', ' ').replace('Z', '');
@@ -320,7 +348,6 @@ const getAllPicksByMostLikes = async () => {
   }
 };
 
-
 // get users
 const getUsers = async () => {
   try {
@@ -362,9 +389,9 @@ picForm.addEventListener('submit', async (evt) => {
       'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
     },
   };
-  const sendInteraction = await fetch(url + '/likes/' + json.pic_id,
+  const setLikes = await fetch(url + '/likes/' + json.pic_id,
       likeCreationOptions);
-  const interactionJson = await sendInteraction.json();
+  const interactionJson = await setLikes.json();
   console.log('add response', interactionJson);
 
 });
@@ -410,9 +437,11 @@ loginForm.addEventListener('submit', async (evt) => {
   if (!json.user) {
     alert(json.message);
   } else {
+    //Set token
     sessionStorage.setItem('token', json.token);
     console.log('token: ', sessionStorage.getItem('token'));
-    //Set cookie for user id
+
+    //Set cookie for user id -> keep track of logged user
     await setloggedUserCookie(json.user.user_id);
     cookies = document.cookie.split(';').
         map(cookie => cookie.split('=')).
@@ -421,6 +450,7 @@ loginForm.addEventListener('submit', async (evt) => {
           [key.trim()]: decodeURIComponent(value),
         }), {});
   }
+  await getPicsByOwner();
 });
 
 // Get pics by owner
@@ -526,6 +556,25 @@ const setloggedUserCookie = async (user_id) => {
   console.log('add cookie response', json);
 };
 
+// Search form
+searchForm.addEventListener('submit', async (evt) => {
+  evt.preventDefault();
+  const fetchOptions = {
+    method: 'GET',
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      'Content-Type': 'application/json',
+    },
+  };
+  console.log(fetchOptions);
+  const response = await fetch(
+      url + '/pic/search/' + document.querySelector('#search-input').value,
+      fetchOptions);
+  const json = await response.json();
+  console.log('add response', json);
+  await createPicCards(json);
+});
+
 //For now the webpage loads the pictures owned by the logged in user
 //Change called function to adjust
 const isToken = (sessionStorage.getItem('token'));
@@ -538,24 +587,20 @@ if (isToken) {
   console.log('No token, log in plz');
 }
 
-//Search for pics owned by logged in user
+//Search for all pics
 but.addEventListener('click', async (evt) => {
   evt.preventDefault();
-  //await getPicsByOwner();
   await getAllPicks();
 });
 
 but2.addEventListener('click', async (evt) => {
   evt.preventDefault();
-  let date = new Date();
-  date = date.toISOString().split('T')[0] + ' '
-      + date.toTimeString().split(' ')[0];
-  console.log(date);
+  await getPicsByOwner();
 });
 
 but3.addEventListener('click', async (evt) => {
   evt.preventDefault();
-  await getAllPicksByMostLikes()
+  await getAllPicksByMostLikes();
 });
 
 
