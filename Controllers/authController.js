@@ -21,7 +21,7 @@ const login = (req, res) => {
         res.send(err);
       }
       // generate a signed son web token with the contents of user object and return it in the response
-      const token = jwt.sign(user, 'your_jwt_secret');
+      const token = jwt.sign(user, 'placeholdersecret');
       return res.json({user, token});
     });
   })(req, res);
@@ -42,7 +42,6 @@ const user_create_post = async (req, res, next) => {
 
     console.log('authController: salt and hash craeted, pw hashed');
 
-
     if (await userModel.insertUser(req)) {
       next();
     } else {
@@ -57,9 +56,8 @@ const logout = (req, res) => {
   res.json({message: 'logout'});
 };
 
-
 module.exports = {
   login,
   logout,
-  user_create_post
+  user_create_post,
 };

@@ -1,5 +1,14 @@
 'use strict';
 const url = 'http://localhost:3000';
+mapboxgl.accessToken = 'pk.eyJ1IjoicGV4aSIsImEiOiJja2hhN241bzYweXBtMnBuenA5Y3NxOGlmIn0.b1NkQwYNPY04r4MBe99rBQ';
+const map = new mapboxgl.Map({
+  container: 'map', // container id
+  style: 'mapbox://styles/mapbox/outdoors-v11',
+  center: [24.92398406198174, 60.18035205606998], // starting position
+  zoom: 7, // starting zoom
+});
+let marker;
+const mapDiv = document.querySelector('#map');
 let cookies = document.cookie.split(';').
     map(cookie => cookie.split('=')).
     reduce((accumulator, [key, value]) => ({
@@ -15,16 +24,22 @@ const searchForm = document.querySelector('#pic-search-form');
 const but = document.querySelector('#but');
 const but2 = document.querySelector('#but2');
 const but3 = document.querySelector('#but3');
+const but4 = document.querySelector('#but4');
 //const modalForm = document.querySelector('#interaction-form');
 //const modalInput = document.querySelector('#modal-input');
 //const modalp = document.querySelector('#modalp');
 const logOut = document.querySelector('#log-out');
 const interactionModal = document.querySelector('#interaction-modal');
+const mapModal = document.querySelector('#map-modal');
 const closeInteractionModal = document.querySelector(
     '#close-interaction-modal');   //<span> element that closes the modal
+const closeMapModal = document.querySelector(
+    '#close-map-modal');   //<span> element that closes the modal
 const modalContent = document.querySelector('#modal-content');
 const cookieButton = document.querySelector('#cookieButton');
 const searchCookie = document.querySelector('#searchCookie');
+const loginWrapper = document.querySelector('#login-wrapper');
+const registerWrapper = document.querySelector('#register-wrapper');
 const body = document.body;
 let user_id = cookies.loggedUser;
 console.log(`Logged in user: ${user_id}`);
@@ -38,8 +53,17 @@ closeInteractionModal.addEventListener('click', (evt) => {
       document.querySelector('#interactionModalDislikeButton'));
   modalContent.removeChild(document.querySelector('#modalp'));
   modalContent.removeChild(document.querySelector('#modalForm'));
-  body.style.overflow = 'visible'
+  modalContent.removeChild(document.querySelector('#modalMapButton'));
+  body.style.overflow = 'visible';
 });
+
+closeMapModal.addEventListener('click', async (evt) => {
+  evt.preventDefault();
+  mapModal.style.display = 'none';
+  marker.remove();
+})
+
+
 
 //Depending what is given as parameter into this function decides what cards are rendered
 const createPicCards = async (pics) => {
@@ -58,6 +82,23 @@ const createPicCards = async (pics) => {
         body.style.overflow = 'hidden';
         console.log(`Clicked pic with an id of: ${pic.pic_id}`);
         interactionModal.style.display = 'block';
+
+        const modalMapButton = document.createElement('button');
+        modalMapButton.id = 'modalMapButton';
+        modalMapButton.innerHTML = 'Display location';
+
+        modalMapButton.addEventListener('click', async (evt) => {
+          evt.preventDefault();
+          console.log('mapbutton coords: ', pic.coords);
+          mapModal.style.display = 'block';
+
+          try {
+            const coords = JSON.parse(pic.coords);
+            addMarker(coords);
+          }
+          catch (e) {
+          }
+        })
 
         const modalp = document.createElement('p');
         modalp.id = 'modalp';
@@ -89,6 +130,7 @@ const createPicCards = async (pics) => {
         modalForm.appendChild(modalButton);
 
         modalContent.appendChild(modalForm);
+        modalContent.appendChild(modalMapButton);
         modalContent.appendChild(modalp);
         modalContent.appendChild(interactionModalLikeButton);
         modalContent.appendChild(interactionModalDislikeButton);
@@ -264,33 +306,8 @@ const createPicCards = async (pics) => {
       owner.innerHTML = `Posted by ${pic.name} ${pic.lastname} on ${postDate}`;
 
       const coords = document.createElement('p');
-      const modifiedCoords = pic.coords.replace('[', '').replace(']', '');
-      coords.innerHTML = modifiedCoords;
+      coords.innerHTML = pic.coords;
 
-      /*
-            try {
-              const modifiedCoords = JSON.parse(pic.coords)
-              coords.innerHTML = modifiedCoords;
-              console.log('modified ', modifiedCoords);
-              console.log('coords', pic.coords);
-              const map =  await new mapboxgl.Map({
-                container: 'map', // container id
-                style: 'mapbox://styles/mapbox/streets-v11',
-                center: [modifiedCoords], // starting position
-                zoom: 9, // starting zoom
-              });
-            } catch (e){
-              console.log(e.error);
-            }
-
-
-            const addMarker = async (coords) => {
-              map.setCenter(coords);
-              const marker = new mapboxgl.Marker().setLngLat(coords).addTo(map);
-            };
-
-            await addMarker(24.818055555555556, 60.220555555555556);
-          */
 
       const date = document.createElement('p');
       const photoTakenDate = pic.date.replace('T', ' ').replace('Z', '');
@@ -419,7 +436,7 @@ registerForm.addEventListener('submit', async (evt) => {
 // login
 loginForm.addEventListener('submit', async (evt) => {
   evt.preventDefault();
-  const data = serializeJson(loginForm);
+  const data = await serializeJson(loginForm);
   const fetchOptions = {
     method: 'POST',
     headers: {
@@ -441,16 +458,15 @@ loginForm.addEventListener('submit', async (evt) => {
     sessionStorage.setItem('token', json.token);
     console.log('token: ', sessionStorage.getItem('token'));
 
+    // Hide login and registration forms
+    loginWrapper.style.display = 'none';
+    registerWrapper.style.display = 'none'
+
+    await getPicsByOwner();
+
     //Set cookie for user id -> keep track of logged user
     await setloggedUserCookie(json.user.user_id);
-    cookies = document.cookie.split(';').
-        map(cookie => cookie.split('=')).
-        reduce((accumulator, [key, value]) => ({
-          ...accumulator,
-          [key.trim()]: decodeURIComponent(value),
-        }), {});
   }
-  await getPicsByOwner();
 });
 
 // Get pics by owner
@@ -490,6 +506,9 @@ logOut.addEventListener('click', async (evt) => {
     sessionStorage.removeItem('token');
     alert('You have logged out');
     picsList.innerHTML = '';
+    // Show login and registration forms again
+    loginWrapper.style.display = 'block';
+    registerWrapper.style.display = 'block';
 
   } catch (e) {
     console.log(e.message);
@@ -543,7 +562,6 @@ const getComments = async (pic_id) => {
 };
 
 const setloggedUserCookie = async (user_id) => {
-  console.log('cookieButton clicked');
   //Create the cookie
   const fetchOptions = {
     method: 'POST',
@@ -554,6 +572,11 @@ const setloggedUserCookie = async (user_id) => {
   const response = await fetch(url + '/cookie/' + user_id, fetchOptions);
   const json = await response.json();
   console.log('add cookie response', json);
+};
+
+const addMarker = (coords) => {
+  map.setCenter(coords);
+  marker = new mapboxgl.Marker().setLngLat(coords).addTo(map);
 };
 
 // Search form
@@ -581,7 +604,7 @@ const isToken = (sessionStorage.getItem('token'));
 // Check for the token...if it exists do these
 if (isToken) {
   getPicsByOwner().then(() => {
-    console.log('token: ', sessionStorage.getItem('token'));
+    //console.log('token: ', sessionStorage.getItem('token'));
   });
 } else {
   console.log('No token, log in plz');
@@ -602,6 +625,10 @@ but3.addEventListener('click', async (evt) => {
   evt.preventDefault();
   await getAllPicksByMostLikes();
 });
+
+but4.addEventListener('click', async (evt) => {
+  mapModal.style.display = 'block';
+})
 
 
 

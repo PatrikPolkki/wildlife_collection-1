@@ -30,9 +30,11 @@ passport.use(new Strategy(
 // TODO: JWT strategy for handling bearer token
 passport.use(new JWTStrategy({
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-      secretOrKey: 'your_jwt_secret',
+      secretOrKey: 'placeholdersecret',
     },
+
     async (jwtPayLoad, done) => {
+
       try {
         console.log('util pass JWT', jwtPayLoad);
         if (jwtPayLoad === undefined) {
@@ -43,6 +45,21 @@ passport.use(new JWTStrategy({
         return done(err);
       }
     },
+
+/*
+    async (jwtPayLoad, done) => {
+
+      try {
+        console.log('util pass JWT', jwtPayLoad);
+        if (jwtPayLoad.user_id === undefined) {
+          return done(null, false, {message: 'Incorrect id.'});
+        }
+        return done(null, {...jwtPayLoad}, {message: 'Logged in succesfully 😀'})
+      } catch (err) {
+        return done(err);
+      }
+    },
+    */
 ));
 
 
