@@ -9,52 +9,56 @@
 </head>
 <body>
 
-<div class="container">
+<div class="card-container">
     <div class="card">
         <div class="background">
-            <div class="gradients">
                 <div class="gradient">
                     <img src="https://source.unsplash.com/800x500/?people" alt="kuva">
                 </div>
-            </div>
-            <a href="#" class="share"><i class="fas fa-share-alt"></i></a>
+            <a href="#" class="map"><i class="fas fa-map-marked"></i></a>
         </div>
         <div class="info">
             <div class="header">
                 <div>
                     <h1 class="username">UserName</h1>
-                    <span class="location">location</span>
                 </div>
-                <h3 class="small">lirum lopsem</h3>
+                <h3 class="small">Location, Norway</h3>
             </div>
             <div class="des">
-                <h3 class="title">Comments</h3>
                 <div class="comments">
-                    <p class="text">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
-                    <p class="text">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
-                    <p class="text">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
-                    <p class="text">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
                 </div>
             </div>
-            <div class="size-container">
-                <h3 class="title">Likes</h3>
-                <div class="sizes">
-                    <span class="size">7</span>
-                    <span class="size">8</span>
-                    <span class="size">9</span>
-                    <span class="size">10</span>
-                    <span class="size">11</span>
+            <div class="likeSection">
+                <div class="date">18.12.2020 16:30</div>
+                <div class="likes">
+                    <div class="thumbs">
+                        <p class="like">Likes <br>👍 687</p>
+                    </div>
+                    <div class="thumbs">
+                        <p class="like">Dislikes <br>👍 492</p>
+                    </div>
                 </div>
             </div>
-            <div class="commentSection">
-            <form class="commentBox" method="post">
-                    <textarea name="message" id="myText" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'" placeholder="palaute"></textarea>
-            </form>
+            <div class="example">
+                <textarea placeholder="Comment something" class="commentArea" form="commentForm"></textarea>
+                <form id="commentForm">
+                <button type="submit">Post</button>
+                </form>
             </div>
+            <a href="#" class="exit"><i class="fas fa-map-marker-alt"></i></a>
         </div>
     </div>
 </div>
-
-
+<script src="test.js"></script>
 </body>
 </html>

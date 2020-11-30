@@ -4,7 +4,10 @@
     <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
     <title>Wildlife Collection</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="card.css">
+    <link rel="stylesheet" href="login.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
+    <script src="https://kit.fontawesome.com/a81368914c.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap"
           rel="stylesheet">
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet'/>
@@ -17,9 +20,9 @@
             <h4>Wildlife Collection</h4>
         </div>
         <div class="links">
-            <a href="#" class="mainlinks">About</a>
-            <a href="#">Register</a>
-            <a href="#">Sign in</a>
+            <a class="mainlinks">About</a>
+            <a class="navRegister">Register</a>
+            <a class="navLogin">Sign in</a>
         </div>
     </div>
 
@@ -32,98 +35,84 @@
         </div>
 
         <div class="galleryArea">
-            <div class="card">
+            <div class="small-card">
                 <img src="https://source.unsplash.com/1600x900/?sport">
                 <div class="text">
                     <h2>User Name</h2>
                     <p>Likes 50    Comments 400</p>
                 </div>
             </div>
-            <div class="card">
+            <div class="small-card">
                 <img src="https://source.unsplash.com/1600x900/?people">
                 <div class="text">
                     <h2>User Name</h2>
                     <p>Likes 50    Comments 400</p>
                 </div>
             </div>
-            <div class="card">
+            <div class="small-card">
                 <img src="https://source.unsplash.com/1600x900/?sport">
                 <div class="text">
                     <h2>User Name</h2>
                     <p>Likes 50    Comments 400</p>
                 </div>
             </div>
-            <div class="card">
+            <div class="small-card">
                 <img src="https://source.unsplash.com/1600x900/?nature">
                 <div class="text">
                     <h2>User Name</h2>
                     <p>Likes 50    Comments 400</p>
                 </div>
             </div>
-            <div class="card">
+            <div class="small-card">
                 <img src="https://source.unsplash.com/1600x900/?people">
                 <div class="text">
                     <h2>User Name</h2>
                     <p>Likes 50    Comments 400</p>
                 </div>
             </div>
-            <div class="card">
+            <div class="small-card">
                 <img src="https://source.unsplash.com/1600x900/?sport">
                 <div class="text">
                     <h2>User Name</h2>
                     <p>Likes 50    Comments 400</p>
                 </div>
             </div>
-            <div class="card">
+            <div class="small-card">
                 <img src="https://source.unsplash.com/1600x900/?sport">
                 <div class="text">
                     <h2>User Name</h2>
                     <p>Likes 50    Comments 400</p>
                 </div>
             </div>
-            <div class="card">
+            <div class="small-card">
                 <img src="https://source.unsplash.com/1600x900/?sport">
                 <div class="text">
                     <h2>User Name</h2>
                     <p>Likes 50    Comments 400</p>
                 </div>
             </div>
-            <div class="card">
-                <img src="https://source.unsplash.com/1600x900/?sport">
+            <div class="small-card">
+                <img src="https://source.unsplash.com/1600x900/?nature">
                 <div class="text">
                     <h2>User Name</h2>
                     <p>Likes 50    Comments 400</p>
                 </div>
             </div>
-            <div class="card">
-                <img src="https://source.unsplash.com/1600x900/?sport">
+            <div class="small-card">
+                <img src="https://source.unsplash.com/1600x900/?nature">
                 <div class="text">
                     <h2>User Name</h2>
                     <p>Likes 50    Comments 400</p>
                 </div>
             </div>
-            <div class="card">
-                <img src="https://source.unsplash.com/1600x900/?sport">
+            <div class="small-card">
+                <img src="https://source.unsplash.com/1600x900/?nature">
                 <div class="text">
                     <h2>User Name</h2>
                     <p>Likes 50    Comments 400</p>
                 </div>
             </div>
-            <div class="card">
-                <img src="https://source.unsplash.com/1600x900/?sport">
-                <div class="text">
-                    <h2>User Name</h2>
-                    <p>Likes 50    Comments 400</p>
-                </div>
-            </div>
-            <div class="card">
-                <img src="https://source.unsplash.com/1600x900/?sport">
-                <div class="text">
-                    <h2>User Name</h2>
-                    <p>Likes 50    Comments 400</p>
-                </div>
-            </div>
-            <div class="card">
+            <div class="small-card">
                 <img src="https://source.unsplash.com/1600x900/?sport">
                 <div class="text">
                     <h2>User Name</h2>
@@ -133,8 +122,83 @@
         </div>
     </div>
 </div>
-
-<script src="./Frontend/index.js"></script>
+<div class="card-container" >
+    <div class="card">
+        <div class="background">
+            <div class="gradients">
+                <div class="gradient">
+                    <img src="https://source.unsplash.com/800x500/?people" alt="kuva">
+                </div>
+            </div>
+            <a href="#" class="map"><i class="fas fa-map-marker-alt"></i></a>
+        </div>
+        <div class="info">
+            <div class="header">
+                <div>
+                    <h1 class="username">UserName</h1>
+                </div>
+                <h3 class="small">Location, Norway</h3>
+            </div>
+            <div class="des">
+                <div class="comments">
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                    <p class="commentText">ajjiojioa adsjiojajioads asjiodasjiopasojpojpojas</p>
+                </div>
+            </div>
+            <div class="likeSection">
+                <div class="date">18.12.2020 16:30</div>
+                <div class="likes">
+                    <div class="thumbs">
+                        <p class="like">Likes <br>👍 687</p>
+                    </div>
+                    <div class="thumbs">
+                        <p class="like">Dislikes <br>👍 492</p>
+                    </div>
+                </div>
+            </div>
+            <div class="example">
+                <textarea placeholder="Comment something" class="commentArea" form="commentForm"></textarea>
+                <form id="commentForm">
+                    <button type="submit">Post</button>
+                </form>
+            </div>
+            <a href="#" class="exit"><i class="fas fa-times"></i></a>
+        </div>
+    </div>
+</div>
+<div class="hero">
+    <div class="form-box">
+        <div class="button-box">
+            <div id="btn"></div>
+            <button type="button" class="toggle-btn">Log in</button>
+            <button type="button" class="toggle-btn">Register</button>
+        </div>
+        <form id="login" class="input-group">
+            <input type="text" name="username" class="input-field" placeholder="Email" required>
+            <input type="password" name="password" class="input-field" placeholder="Enter Password" required>
+            <input type="checkbox" class="check-box"><span>Remember Password</span>
+            <button type="submit" class="submit-btn">Log in</button>
+        </form>
+        <form id="register" class="input-group">
+            <input type="text" name="name" pattern=".{3,}" class="input-field" placeholder="Firstname" required>
+            <input type="text" name="lastname" pattern=".{3,}" class="input-field" placeholder="LastName" required>
+            <input type="email" name="email" class="input-field" placeholder="Email" required>
+            <input type="password" name="password" pattern="(?=.*[A-Z]).{8,}" class="input-field" placeholder="Enter Password" required>
+            <input type="checkbox" class="check-box"><span>I agree to the terms & conditions</span>
+            <button type="submit" class="submit-btn">Register</button>
+        </form>
+        <a href="#" class="exit"><i class="fas fa-times"></i></a>
+    </div>
+</div>
+<script src="test.js"></script>
 <script src="./Frontend/serialize.js"></script>
 <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
 </body>
