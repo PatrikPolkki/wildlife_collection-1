@@ -42,19 +42,48 @@ const createPicCards = async (pics) => {
       //Fetch to get interactions, likes and comments. result --> interactions of photos
       //await Promise.resolve(getLikes(pic.pic_id)).then((result) => {
 
-      const img = document.createElement('img');
+      const smallCard = document.createElement('div');
+      smallCard.className = 'small-card'
 
+      const img = document.createElement('img');
       img.src = url + '/thumbnails/' + pic.filename;
 
-      /*
+      smallCard.appendChild(img);
+
+
       //Create and Display modal on image click
-      img.addEventListener('click', async (evt) => {
+      smallCard.addEventListener('click', async (evt) => {
         console.log(`Clicked pic with an id of: ${pic.pic_id}`);
         cardContainer.style.display = 'flex';
+        body.style.overflow = 'none';
 
-        const modalp = document.createElement('p');
-        modalp.id = 'modalp';
+        //Append clicked image to the opening modal
+        const gradient = document.querySelector('.gradient');
 
+        const modalPic = document.createElement('img');
+        modalPic.src = img.src = url + '/thumbnails/' + pic.filename;
+        gradient.appendChild(modalPic);
+
+        const username = document.createElement('h1');
+        username.className = 'username';
+        username.innerHTML = `${pic.name} ${pic.lastname}`
+        document.querySelector('.header div').appendChild(username);
+
+
+        const commentsection = document.querySelector('.comments');
+        const comments = await getComments(pic.pic_id);
+        console.log(comments);
+        comments.forEach((comment) => {
+          const commentText = document.createElement('p');
+          commentText.className = 'commentText';
+          commentText.innerHTML += comment.comment;
+          commentsection.appendChild(commentText);
+          //commentsection.innerHTML += `<p>${comment.comment}</p>`;
+        });
+
+
+
+        /*
         const interactionModalLikeButton = document.createElement('span');
         interactionModalLikeButton.id = 'interactionModalLikeButton';
 
@@ -92,11 +121,7 @@ const createPicCards = async (pics) => {
         interactionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
         interactionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
 
-        const comments = await getComments(pic.pic_id);
-        console.log(comments);
-        comments.forEach((comment) => {
-          modalp.innerHTML += `<p>${comment.date} ${comment.name} ${comment.lastname}: ${comment.comment}</p>`;
-        });
+
 
         //Like chosen photo
         interactionModalLikeButton.addEventListener('click', async (evt) => {
@@ -249,26 +274,24 @@ const createPicCards = async (pics) => {
 
         } catch (e) {
           console.log(e.message);
-        }
+        }*/
       });
-       */
+
+
+
+
       const updatedLikes = await getLikes(pic.pic_id);
       console.log(updatedLikes);
-
-
-      const smallCard = document.createElement('div');
-      smallCard.className = 'small-card'
 
       const text = document.createElement('div');
       text.className = 'text';
 
       const owner = document.createElement('h2');
-      owner.innerHTML = pic.owner;
+      owner.innerHTML = `${pic.name} ${pic.lastname}`;
 
       const likes = document.createElement('p');
       likes.innerHTML = `Likes ${updatedLikes[0].likes} Dislikes ${updatedLikes[0].dislikes}`;
 
-      smallCard.appendChild(img);
       smallCard.appendChild(text);
       text.appendChild(owner);
       text.appendChild(likes);
