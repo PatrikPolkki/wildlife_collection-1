@@ -296,6 +296,22 @@ const createPicCards = async (pics) => {
       const photoTakenDate = pic.date.replace('T', ' ').replace('Z', '');
       date.innerHTML = `Photo taken: ${photoTakenDate}`;
 
+      const checkOwnerShip = async () => {
+        const fetchOptions = {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+            'Content-Type': 'application/json',
+          },
+        };
+        const response = await fetch(url + '/pic/picuserid/' + pic.pic_id,
+            fetchOptions);
+        //console.log('owner status:', json);
+        return await response.json();
+      };
+
+      //await console.log(isOwner);
+
       const li = document.createElement('li');
 
       li.appendChild(img);
@@ -305,6 +321,39 @@ const createPicCards = async (pics) => {
       li.appendChild(owner);
       li.appendChild(coords);
       li.appendChild(date);
+
+      // Check if the logged user owns the photo, if so make button to be allowed to delete the photo
+      const checkOwner = await checkOwnerShip().then((result) => {
+        if (result.result === true) {
+          const deletePicButton = document.createElement('button');
+          deletePicButton.innerHTML = 'Delete this photo';
+          deletePicButton.addEventListener('click', async (evt) => {
+            evt.preventDefault();
+            console.log(`Delete pressed at ${pic.pic_id}`);
+            //TODO: Add deletion route for deleting chosen photo
+            try {
+              const options = {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+                },
+              };
+              console.log(options);
+              const response = await fetch(
+                  url + '/pic/delete/' + pic.pic_id, options);
+              const json = await response.json();
+              console.log('Delete response: ', json);
+
+            } catch (e) {
+              console.log(e.message);
+            }
+
+          });
+          li.appendChild(deletePicButton);
+        }
+      });
+      await checkOwner;
+
       picsList.appendChild(li);
 
     }
@@ -487,7 +536,6 @@ logOut.addEventListener('click', async (evt) => {
     console.log(e.message);
   }
 });
-
 
 const getLikes = async (pic_id) => {
   try {

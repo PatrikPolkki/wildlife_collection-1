@@ -13,14 +13,14 @@ const pic_list_get = async (req, res) => {
 const pic_list_get_by_most_likes = async (req, res) => {
   const pics = await picModel.getPicsByMostLikes();
   await res.json(pics);
-}
+};
 
 const pic_list_get_by_search = async (req, res) => {
   const input = '%' + req.params.input + '%';
   console.log(input);
-  const pics = await picModel.getPicsBySearch(input)
+  const pics = await picModel.getPicsBySearch(input);
   await res.json(pics);
-}
+};
 
 const pic_create = async (req, res) => {
   //here we will create a pic with data coming from req
@@ -80,11 +80,29 @@ const pic_get_by_owner = async (req, res) => {
   await res.json(pic);
 };
 
+
+// Send true if user is the owner of picture else send false
+const get_pic_user_id = async (req, res) => {
+  const pickOwner = await picModel.getPicById(req.params.pic_id);
+  if (pickOwner.user_id === req.user.user_id) {
+    await res.status(200).send({'result': true});
+  } else {
+    await res.status(200).send({'result': false});
+  }
+};
+
+const pic_delete = async (req, res) => {
+  const picDeleted = await picModel.deletePic(req.params.pic_id);
+  await res.json(picDeleted)
+}
+
 module.exports = {
   pic_list_get,
   pic_create,
   make_thumbnail,
   pic_get_by_owner,
   pic_list_get_by_most_likes,
-  pic_list_get_by_search
+  pic_list_get_by_search,
+  get_pic_user_id,
+  pic_delete
 };
