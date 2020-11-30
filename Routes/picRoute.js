@@ -47,7 +47,7 @@ router.route('/')
     picController.pic_create);
 */
 
-router.route('/:id')
+router.route('/')
     //.get(picController.pic_list_get)
     .post(
         upload.single('pic'),
@@ -61,6 +61,6 @@ router.route('/:id')
         picController.pic_create);
 
 
-router.route('/:user_id').get(picController.pic_get_by_owner);
+router.route('/userpics').get(picController.pic_get_by_owner);
 
 module.exports = router;

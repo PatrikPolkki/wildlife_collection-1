@@ -9,12 +9,6 @@ const map = new mapboxgl.Map({
 });
 let marker;
 const mapDiv = document.querySelector('#map');
-let cookies = document.cookie.split(';').
-    map(cookie => cookie.split('=')).
-    reduce((accumulator, [key, value]) => ({
-      ...accumulator,
-      [key.trim()]: decodeURIComponent(value),
-    }), {});
 const picsList = document.querySelector('#pics-list');
 picsList.style.listStyle = 'none';
 const picForm = document.querySelector('#add-pic-form');
@@ -25,9 +19,6 @@ const but = document.querySelector('#but');
 const but2 = document.querySelector('#but2');
 const but3 = document.querySelector('#but3');
 const but4 = document.querySelector('#but4');
-//const modalForm = document.querySelector('#interaction-form');
-//const modalInput = document.querySelector('#modal-input');
-//const modalp = document.querySelector('#modalp');
 const logOut = document.querySelector('#log-out');
 const interactionModal = document.querySelector('#interaction-modal');
 const mapModal = document.querySelector('#map-modal');
@@ -36,13 +27,9 @@ const closeInteractionModal = document.querySelector(
 const closeMapModal = document.querySelector(
     '#close-map-modal');   //<span> element that closes the modal
 const modalContent = document.querySelector('#modal-content');
-const cookieButton = document.querySelector('#cookieButton');
-const searchCookie = document.querySelector('#searchCookie');
 const loginWrapper = document.querySelector('#login-wrapper');
 const registerWrapper = document.querySelector('#register-wrapper');
 const body = document.body;
-let user_id = cookies.loggedUser;
-console.log(`Logged in user: ${user_id}`);
 
 closeInteractionModal.addEventListener('click', (evt) => {
   interactionModal.style.display = 'none';
@@ -61,9 +48,7 @@ closeMapModal.addEventListener('click', async (evt) => {
   evt.preventDefault();
   mapModal.style.display = 'none';
   marker.remove();
-})
-
-
+});
 
 //Depending what is given as parameter into this function decides what cards are rendered
 const createPicCards = async (pics) => {
@@ -95,10 +80,9 @@ const createPicCards = async (pics) => {
           try {
             const coords = JSON.parse(pic.coords);
             addMarker(coords);
+          } catch (e) {
           }
-          catch (e) {
-          }
-        })
+        });
 
         const modalp = document.createElement('p');
         modalp.id = 'modalp';
@@ -219,7 +203,7 @@ const createPicCards = async (pics) => {
           };
           console.log(fetchOptions);
           const response = await fetch(
-              url + `/comments/${pic.pic_id}/${user_id}`, fetchOptions);
+              url + `/comments/${pic.pic_id}`, fetchOptions);
           const json = await response.json();
           console.log('add comment response', json);
 
@@ -308,7 +292,6 @@ const createPicCards = async (pics) => {
       const coords = document.createElement('p');
       coords.innerHTML = pic.coords;
 
-
       const date = document.createElement('p');
       const photoTakenDate = pic.date.replace('T', ' ').replace('Z', '');
       date.innerHTML = `Photo taken: ${photoTakenDate}`;
@@ -376,7 +359,6 @@ const getUsers = async () => {
     const response = await fetch(url + '/user', options);
     const users = await response.json();
     console.log(users);
-    //showUsers(users);
   } catch (e) {
     console.log(e.message);
   }
@@ -394,7 +376,7 @@ picForm.addEventListener('submit', async (evt) => {
     },
     body: fd,
   };
-  const response = await fetch(url + '/pic/' + user_id, fetchOptions);
+  const response = await fetch(url + '/pic', fetchOptions);
   const json = await response.json();
   console.log('add response', json);
   console.log('json.pick_id', json.pic_id);
@@ -448,8 +430,6 @@ loginForm.addEventListener('submit', async (evt) => {
   const response = await fetch(url + '/auth/login', fetchOptions);
   const json = await response.json();
   console.log('login response', json);
-  console.log('user_id', json.user.user_id);
-  user_id = json.user.user_id;
 
   if (!json.user) {
     alert(json.message);
@@ -460,12 +440,9 @@ loginForm.addEventListener('submit', async (evt) => {
 
     // Hide login and registration forms
     loginWrapper.style.display = 'none';
-    registerWrapper.style.display = 'none'
+    registerWrapper.style.display = 'none';
 
     await getPicsByOwner();
-
-    //Set cookie for user id -> keep track of logged user
-    await setloggedUserCookie(json.user.user_id);
   }
 });
 
@@ -477,14 +454,10 @@ const getPicsByOwner = async () => {
         'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
       },
     };
-    if (user_id !== '') {
-      const response = await fetch(url + '/pic/' + user_id, options);
-      const pics = await response.json();
-      console.log(pics);
-      await createPicCards(pics);
-    } else {
-      console.log('bad user id');
-    }
+    const response = await fetch(url + '/pic/userpics', options);
+    const pics = await response.json();
+    console.log(pics);
+    await createPicCards(pics);
   } catch (e) {
     console.log(e.message);
   }
@@ -515,21 +488,6 @@ logOut.addEventListener('click', async (evt) => {
   }
 });
 
-// Get amount of likes of pic
-const getInteractions = async (pic_id) => {
-  try {
-    const options = {
-      headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-      },
-    };
-    const response = await fetch(url + '/interaction/' + pic_id,
-        options);
-    return await response.json();
-  } catch (e) {
-    console.log(e.message);
-  }
-};
 
 const getLikes = async (pic_id) => {
   try {
@@ -559,19 +517,6 @@ const getComments = async (pic_id) => {
   } catch (e) {
     console.log(e.message);
   }
-};
-
-const setloggedUserCookie = async (user_id) => {
-  //Create the cookie
-  const fetchOptions = {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-    },
-  };
-  const response = await fetch(url + '/cookie/' + user_id, fetchOptions);
-  const json = await response.json();
-  console.log('add cookie response', json);
 };
 
 const addMarker = (coords) => {
@@ -628,7 +573,7 @@ but3.addEventListener('click', async (evt) => {
 
 but4.addEventListener('click', async (evt) => {
   mapModal.style.display = 'block';
-})
+});
 
 
 

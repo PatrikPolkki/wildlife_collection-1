@@ -16,9 +16,10 @@ const add_comment = async (req, res) => {
   let date = new Date();
   date = date.toISOString().split('T')[0] + ' '
       + date.toTimeString().split(' ')[0];
+
   req.body.date = date;
   req.body.pic_id = req.params.pic_id;
-  req.body.user_id = req.params.user_id;
+  req.body.user_id = req.user.user_id;
   console.log('req.body after adding', req.body);
   const comment = await commentModel.addComment(req);
   await res.json(comment);
