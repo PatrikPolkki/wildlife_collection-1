@@ -1,27 +1,29 @@
 'use strict';
 
 const url = 'http://localhost:3000';
-
-let cookies = document.cookie.split(';').
-    map(cookie => cookie.split('=')).
-    reduce((accumulator, [key, value]) => ({
-      ...accumulator,
-      [key.trim()]: decodeURIComponent(value),
-    }), {});
+mapboxgl.accessToken = 'pk.eyJ1IjoicGV4aSIsImEiOiJja2hhN241bzYweXBtMnBuenA5Y3NxOGlmIn0.b1NkQwYNPY04r4MBe99rBQ';
+const map = new mapboxgl.Map({
+  container: 'map', // container id
+  style: 'mapbox://styles/mapbox/outdoors-v11',
+  center: [24.92398406198174, 60.18035205606998], // starting position
+  zoom: 7, // starting zoom
+});
+let marker;
 
 const body = document.querySelector('body');
-
 const galleryArea = document.querySelector('.galleryArea');
 
 const cardContainer = document.querySelector('.card-container');
+const gradient = document.querySelector('.gradient');
+const commentsection = document.querySelector('.comments');
+const likeSection = document.querySelector('.likeSection');
+
+const closeInteractionModel = document.querySelector('.exit');
+const closeHeroForm = document.querySelector('.loginExit');
+const closeMapModal = document.querySelector('.exitMap');
 
 const registerForm = document.querySelector('#register');
 const loginForm = document.querySelector('#login');
-
-
-let user_id = cookies.loggedUser;
-console.log(`Logged in user: ${user_id}`);
-
 
 //for login/register form css
 const hero = document.querySelector('.hero');
@@ -31,6 +33,35 @@ const z = document.getElementById('btn');
 const login = document.getElementsByClassName('toggle-btn')[0];
 const register = document.getElementsByClassName('toggle-btn')[1];
 
+const links = document.querySelector('.links');
+const istokenLinks = document.querySelector('.otherLinks');
+
+//clear the image card after pressing x button
+closeInteractionModel.addEventListener('click', (evt) => {
+  console.log(evt);
+  gradient.innerHTML = '';
+  document.querySelector('.header div').innerHTML = '';
+  commentsection.innerHTML = '';
+
+  likeSection.innerHTML = '';
+  likeSection.innerHTML = '';
+
+  cardContainer.style.display = 'none';
+  body.style.overflow = 'auto';
+});
+//close register and login form
+closeHeroForm.addEventListener('click', (evt) => {
+  console.log(evt);
+
+  hero.style.display = 'none';
+  body.style.overflow = 'auto';
+});
+//close map
+closeMapModal.addEventListener('click', async (evt) => {
+  evt.preventDefault();
+  document.querySelector('.map-container').style.display = 'none';
+  marker.remove();
+});
 
 const createPicCards = async (pics) => {
   //Clear so if new picture is added, the whole json is loaded again and has to be rendered again
@@ -42,35 +73,58 @@ const createPicCards = async (pics) => {
       //Fetch to get interactions, likes and comments. result --> interactions of photos
       //await Promise.resolve(getLikes(pic.pic_id)).then((result) => {
 
+      //Get up to date from database then assign the value to elements
+      const updatedLikes = await getLikes(pic.pic_id);
+      console.log(updatedLikes);
+
       const smallCard = document.createElement('div');
-      smallCard.className = 'small-card'
+      smallCard.className = 'small-card';
 
       const img = document.createElement('img');
       img.src = url + '/thumbnails/' + pic.filename;
 
       smallCard.appendChild(img);
 
-
       //Create and Display modal on image click
       smallCard.addEventListener('click', async (evt) => {
         console.log(`Clicked pic with an id of: ${pic.pic_id}`);
         cardContainer.style.display = 'flex';
-        body.style.overflow = 'none';
+        body.style.overflow = 'hidden';
 
+        const modalMapButton = document.querySelector('.map');
+        modalMapButton.addEventListener('click', async (evt) => {
+          evt.preventDefault();
+          console.log(evt);
+          console.log('mapbutton coords: ', pic.coords);
+          document.querySelector('.map-container').style.display = 'flex';
+
+          try {
+            const mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
+
+            mapCanvas.style.width = '100%';
+            mapCanvas.style.height = '100%';
+            map.resize();
+          }
+          catch (e) {
+            console.log(e);
+          }
+
+          try {
+            const coords = JSON.parse(pic.coords);
+            addMarker(coords);
+          } catch (e) {
+          }
+        });
         //Append clicked image to the opening modal
-        const gradient = document.querySelector('.gradient');
-
         const modalPic = document.createElement('img');
         modalPic.src = img.src = url + '/thumbnails/' + pic.filename;
         gradient.appendChild(modalPic);
 
         const username = document.createElement('h1');
         username.className = 'username';
-        username.innerHTML = `${pic.name} ${pic.lastname}`
+        username.innerHTML = `${pic.name} ${pic.lastname}`;
         document.querySelector('.header div').appendChild(username);
 
-
-        const commentsection = document.querySelector('.comments');
         const comments = await getComments(pic.pic_id);
         console.log(comments);
         comments.forEach((comment) => {
@@ -78,52 +132,41 @@ const createPicCards = async (pics) => {
           commentText.className = 'commentText';
           commentText.innerHTML += comment.comment;
           commentsection.appendChild(commentText);
-          //commentsection.innerHTML += `<p>${comment.comment}</p>`;
         });
 
+        const date = document.createElement('div');
+        date.className = 'date';
+        const postDate = pic.post_date.replace('T', ' ').replace('Z', '');
+        date.innerHTML = `${postDate}`;
 
+        const likes = document.createElement('div');
+        likes.className = 'likes';
+        const thumbsUp = document.createElement('div');
+        thumbsUp.className = 'thumbs';
+        const thumbsDown = document.createElement('div');
+        thumbsDown.className = 'thumbs';
 
-        /*
-        const interactionModalLikeButton = document.createElement('span');
-        interactionModalLikeButton.id = 'interactionModalLikeButton';
+        const interactionModalLikeButton = document.createElement('p');
+        interactionModalLikeButton.className = 'like';
+        const interactionModalDislikeButton = document.createElement('p');
+        interactionModalDislikeButton.className = 'like';
 
-        const interactionModalDislikeButton = document.createElement('span');
-        interactionModalDislikeButton.id = 'interactionModalDislikeButton';
+        thumbsUp.appendChild(interactionModalLikeButton);
+        thumbsDown.appendChild(interactionModalDislikeButton);
 
-        const modalForm = document.createElement('form');
-        modalForm.id = 'modalForm';
+        likes.appendChild(thumbsUp);
+        likes.appendChild(thumbsDown);
 
-        const modalInput = document.createElement('input');
-        modalInput.id = 'modalInput';
-        modalInput.style.width = '50%';
-        modalInput.style.height = '5%';
-        modalInput.id = 'modal-input';
-        modalInput.type = 'text';
-        modalInput.name = 'comment';
-        modalInput.pattern = '.{3,}';
-        modalInput.placeholder = 'Write your comment about this photo here';
-        modalInput.required = true;
+        likeSection.appendChild(date);
+        likeSection.appendChild(likes);
 
-        const modalButton = document.createElement('button');
-        modalButton.id = 'modalButton';
-        modalButton.innerHTML = 'Comment';
-        modalForm.appendChild(modalInput);
-        modalForm.appendChild(modalButton);
-
-        modalContent.appendChild(modalForm);
-        modalContent.appendChild(modalp);
-        modalContent.appendChild(interactionModalLikeButton);
-        modalContent.appendChild(interactionModalDislikeButton);
-
-        //Get up to date likes and comments from database then assign the value to elements
+        //Get up to date from database then assign the value to elements
         const updatedLikes = await getLikes(pic.pic_id);
         console.log(updatedLikes);
-        interactionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
-        interactionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
+        interactionModalLikeButton.innerHTML = `&#x1F44D; ${updatedLikes[0].likes}`;
+        interactionModalDislikeButton.innerHTML = `&#128078; ${updatedLikes[0].dislikes}`;
 
-
-
-        //Like chosen photo
+        //Like photo
         interactionModalLikeButton.addEventListener('click', async (evt) => {
           evt.preventDefault();
 
@@ -143,17 +186,15 @@ const createPicCards = async (pics) => {
 
             //Fetch the updated like and update like amount
             const updatedLikes = await getLikes(pic.pic_id);
-            interactionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
+            interactionModalLikeButton.innerHTML = `&#x1F44D; ${updatedLikes[0].likes}`;
             //... to outside the modal too
-            likes.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
 
           } catch (e) {
             console.log(e.message);
           }
         });
 
-
-        //Dislike chosen photo
+        //Dislike photo
         interactionModalDislikeButton.addEventListener('click', async (evt) => {
           evt.preventDefault();
 
@@ -173,115 +214,54 @@ const createPicCards = async (pics) => {
 
             //Fetch the updated dislike and update dislike amount
             const updatedLikes = await getLikes(pic.pic_id);
-            interactionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
+            interactionModalDislikeButton.innerHTML = `&#128078; ${updatedLikes[0].dislikes}`;
             //... to outside the modal too
-            dislikes.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
 
           } catch (e) {
             console.log(e.message);
           }
         });
+        const commentArea = document.querySelector('.commentArea');
+        commentArea.name = 'comment';
+        const modalForm = document.querySelector('#commentForm');
 
         //Post a comment to selected photo
         modalForm.addEventListener('submit', async (evt) => {
           evt.preventDefault();
-          const data = serializeJson(modalForm);
-          const fetchOptions = {
-            method: 'POST',
-            headers: {
-              'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-          };
-          console.log(fetchOptions);
-          const response = await fetch(
-              url + `/comments/${pic.pic_id}/${user_id}`, fetchOptions);
-          const json = await response.json();
-          console.log('add comment response', json);
+          if (commentArea.value !== '') {
+            const data = serializeJson(modalForm);
+            const fetchOptions = {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+            };
+            console.log(fetchOptions);
+            const response = await fetch(
+                url + `/comments/${pic.pic_id}`, fetchOptions);
+            const json = await response.json();
+            console.log('add comment response', json);
 
-          const comments = await getComments(pic.pic_id);
-          console.log(comments);
-          modalp.innerHTML = '';
-          comments.forEach((comment) => {
-            modalp.innerHTML += `<p>${comment.date} ${comment.name} ${comment.lastname}: ${comment.comment}</p>`;
-          });
+            const comments = await getComments(pic.pic_id);
+
+            console.log(comments);
+
+            commentsection.innerHTML = '';
+            comments.forEach((comment) => {
+              const commentText = document.createElement('p');
+              commentText.className = 'commentText';
+              commentText.innerHTML += comment.comment;
+              commentsection.appendChild(commentText);
+            });
+          }
+          else {
+            alert('Write a comment');
+          }
         });
 
-        //Append clicked image to the opening modal
-        const modalPic = document.createElement('img');
-        modalPic.src = img.src = url + '/thumbnails/' + pic.filename;
-        modalPic.id = 'modalPic';
-        modalContent.insertBefore(modalPic, modalContent.firstChild);
-
       });
-
-
-      const likes = document.createElement('p');
-      const dislikes = document.createElement('span')
-      const updatedLikes = await getLikes(pic.pic_id);
-      likes.innerHTML = updatedLikes[0].likes + '&#x1F44D;';
-      dislikes.innerHTML = updatedLikes[0].dislikes + '&#128078;';
-
-      // Incrementing for the main like button outside of modal
-      likes.addEventListener('click', async (evt) => {
-        evt.preventDefault();
-
-        console.log(pic.pic_id);
-        try {
-          const options = {
-            method: 'PUT',
-            headers: {
-              'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-            },
-          };
-          console.log(options);
-          const response = await fetch(
-              url + '/likes/incrementlike/' + pic.pic_id, options);
-          const json = await response.json();
-          console.log('add like response', json);
-
-          //Fetch the updated like and update like amount to the webpage too
-          const updatedLikes = await getLikes(pic.pic_id);
-          likes.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
-
-        } catch (e) {
-          console.log(e.message);
-        }
-      });
-
-
-      // Incrementing for the main dislike button outside of modal
-      dislikes.addEventListener('click', async (evt) => {
-        evt.preventDefault();
-
-        console.log(pic.pic_id);
-        try {
-          const options = {
-            method: 'PUT',
-            headers: {
-              'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-            },
-          };
-          console.log(options);
-          const response = await fetch(
-              url + '/likes/incrementdislike/' + pic.pic_id, options);
-          const json = await response.json();
-          console.log('add like response', json);
-
-          const updatedLikes = await getLikes(pic.pic_id);
-          dislikes.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
-
-        } catch (e) {
-          console.log(e.message);
-        }*/
-      });
-
-
-
-
-      const updatedLikes = await getLikes(pic.pic_id);
-      console.log(updatedLikes);
 
       const text = document.createElement('div');
       text.className = 'text';
@@ -296,7 +276,6 @@ const createPicCards = async (pics) => {
       text.appendChild(owner);
       text.appendChild(likes);
       galleryArea.appendChild(smallCard);
-      //     });
 
     }
 
@@ -304,7 +283,6 @@ const createPicCards = async (pics) => {
     console.log(e.message);
   }
 };
-
 
 const getAllPicks = async () => {
   try {
@@ -316,15 +294,13 @@ const getAllPicks = async () => {
     const response = await fetch(url + '/pic', options);
     const pics = await response.json();
     console.log(pics);
+
     await createPicCards(pics);
   } catch (e) {
     console.log(e.message);
   }
 };
 getAllPicks();
-
-
-
 
 // Register
 registerForm.addEventListener('submit', async (evt) => {
@@ -344,12 +320,15 @@ registerForm.addEventListener('submit', async (evt) => {
   console.log('add response', json);
   // Save token
   sessionStorage.setItem('token', json.token);
+
+  // Hide login and registration forms
+  hero.style.display = 'none';
 });
 
 // login
 loginForm.addEventListener('submit', async (evt) => {
   evt.preventDefault();
-  const data = serializeJson(loginForm);
+  const data = await serializeJson(loginForm);
   const fetchOptions = {
     method: 'POST',
     headers: {
@@ -361,38 +340,47 @@ loginForm.addEventListener('submit', async (evt) => {
   const response = await fetch(url + '/auth/login', fetchOptions);
   const json = await response.json();
   console.log('login response', json);
-  console.log('user_id', json.user.user_id);
-  user_id = json.user.user_id;
 
   if (!json.user) {
     alert(json.message);
   } else {
+    //Set token
     sessionStorage.setItem('token', json.token);
     console.log('token: ', sessionStorage.getItem('token'));
-    //Set cookie for user id
-    await setloggedUserCookie(json.user.user_id);
-    cookies = document.cookie.split(';').
-        map(cookie => cookie.split('=')).
-        reduce((accumulator, [key, value]) => ({
-          ...accumulator,
-          [key.trim()]: decodeURIComponent(value),
-        }), {});
+
+    // Hide login and registration forms
+    hero.style.display = 'none';
+    body.style.overflow = 'auto';
+
+    await checkToken();
   }
 });
 
-const setloggedUserCookie = async (user_id) => {
-  console.log('cookieButton clicked');
-  //Create the cookie
-  const fetchOptions = {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-    },
-  };
-  const response = await fetch(url + '/cookie/' + user_id, fetchOptions);
-  const json = await response.json();
-  console.log('add cookie response', json);
-};
+//Logout logged in user
+const logout = document.querySelector('.logOut');
+logout.addEventListener('click', async (evt) => {
+
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/auth/logout', options);
+    const json = await response.json();
+    console.log(json);
+    // remove token
+    sessionStorage.removeItem('token');
+    alert('You have logged out');
+    galleryArea.innerHTML = '';
+    links.style.display = 'flex';
+    istokenLinks.style.display = 'none';
+  } catch (e) {
+    console.log(e.message);
+  }
+});
+
+
 
 const getLikes = async (pic_id) => {
   try {
@@ -424,75 +412,73 @@ const getComments = async (pic_id) => {
   }
 };
 
+const getPicsByOwner = async () => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/pic/userpics', options);
+    const pics = await response.json();
+    console.log(pics);
+    await createPicCards(pics);
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+const addMarker = (coords) => {
+  map.setCenter(coords);
+  marker = new mapboxgl.Marker().setLngLat(coords).addTo(map);
+};
+
+//For now the webpage loads the pictures owned by the logged in user
+//Change called function to adjust
 const isToken = (sessionStorage.getItem('token'));
 // Check for the token...if it exists do these
 if (isToken) {
-  console.log('is logged in');
+  //getPicsByOwner().then(() => {
+  console.log('token: ', sessionStorage.getItem('token'));
+  //});
 } else {
   console.log('No token, log in plz');
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+const checkToken = async () => {
+  if (isToken) {
+    links.style.display = 'none';
+    istokenLinks.style.display = 'flex';
+  }
+}
+checkToken();
 
 // these are for login/registering form css
 document.querySelector('.navLogin').addEventListener('click', () => {
   hero.style.display = 'flex';
   cardContainer.style.display = 'none';
   body.style.overflow = 'hidden';
-  x.style.left = "50px";
-  y.style.left = "450px";
-  z.style.left = "0";
+  x.style.left = '50px';
+  y.style.left = '450px';
+  z.style.left = '0';
 });
 document.querySelector('.navRegister').addEventListener('click', () => {
   hero.style.display = 'flex';
   cardContainer.style.display = 'none';
   body.style.overflow = 'hidden';
-  x.style.left = "-400px";
-  y.style.left = "50px";
-  z.style.left = "110px";
+  x.style.left = '-400px';
+  y.style.left = '50px';
+  z.style.left = '110px';
 });
-
-
-
 
 register.addEventListener('click', (evt) => {
   console.log(evt);
-  x.style.left = "-400px";
-  y.style.left = "50px";
-  z.style.left = "110px";
+  x.style.left = '-400px';
+  y.style.left = '50px';
+  z.style.left = '110px';
 });
 login.addEventListener('click', (evt) => {
   console.log(evt);
-  x.style.left = "50px";
-  y.style.left = "450px";
-  z.style.left = "0";
+  x.style.left = '50px';
+  y.style.left = '450px';
+  z.style.left = '0';
 });
