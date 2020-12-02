@@ -25,13 +25,14 @@ const insertUser = async (req) => {
   console.log('userModel req.body: ', req.body);
   try {
     const [rows] = await promisePool.execute(
-        'INSERT INTO wop_testuser (name, lastname, email, password)' +
-        'VALUES (?, ?, ?, ?)',
+        'INSERT INTO wop_testuser (name, lastname, email, password, admin)' +
+        'VALUES (?, ?, ?, ?, ?)',
         [
           req.body.name,
           req.body.lastname,
           req.body.email,
-          req.body.password]);
+          req.body.password,
+          req.body.admin]);
     console.log('userModel insert: ', rows);
     return rows.insertId;
   } catch (e) {
@@ -39,8 +40,6 @@ const insertUser = async (req) => {
     return 0;
   }
 };
-
-
 
 const getUserLogin = async (params) => {
   try {
@@ -53,7 +52,6 @@ const getUserLogin = async (params) => {
     console.log('error', e.message);
   }
 };
-
 
 module.exports = {
   getAllUsers,

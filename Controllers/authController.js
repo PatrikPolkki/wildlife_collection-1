@@ -39,6 +39,7 @@ const user_create_post = async (req, res, next) => {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
     req.body.password = hash;
+    req.body.admin = 0;
 
     console.log('authController: salt and hash craeted, pw hashed');
 

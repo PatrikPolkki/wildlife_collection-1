@@ -11,12 +11,19 @@ const getCoordinates = (imgFile) => { // imgFile = full path to uploaded image
           reject(error);
         } else {
           console.log('Exif data', exifData); // Do something with your data!
-          // coordinates below should be an array of GPS coordinates in decimal format: [longitude, latitude]
-          const coordinates = [
-            gpsToDecimal(exifData.gps.GPSLongitude, exifData.gps.GPSLongitudeRef),
-            gpsToDecimal(exifData.gps.GPSLatitude, exifData.gps.GPSLatitudeRef),
-          ];
-          resolve(coordinates);
+          //Check if there are gps info in the pic
+          if (exifData.gps.GPSLongitude !== undefined) {
+            const coordinates = [
+              gpsToDecimal(exifData.gps.GPSLongitude,
+                  exifData.gps.GPSLongitudeRef),
+              gpsToDecimal(exifData.gps.GPSLatitude,
+                  exifData.gps.GPSLatitudeRef),
+            ];
+            resolve(coordinates);
+          } else {
+            const coordinates = null;
+            resolve(coordinates);
+          }
         }
       });
     } catch (error) {
@@ -29,11 +36,10 @@ const getCoordinates = (imgFile) => { // imgFile = full path to uploaded image
 // for longitude, send exifData.gps.GPSLongitude, exifData.gps.GPSLongitudeRef
 // for latitude, send exifData.gps.GPSLatitude, exifData.gps.GPSLatitudeRef
 const gpsToDecimal = (gpsData, hem) => {
-  let d = parseFloat(gpsData[0]) + parseFloat(gpsData[1] / 60) +
-      parseFloat(gpsData[2] / 3600);
-  return (hem === 'S' || hem === 'W') ? d *= -1 : d;
+    let d = parseFloat(gpsData[0]) + parseFloat(gpsData[1] / 60) +
+        parseFloat(gpsData[2] / 3600);
+    return (hem === 'S' || hem === 'W') ? d *= -1 : d;
 };
-
 
 const getDateTimeOriginal = (imgFile) => { // imgFile = full path to uploaded image
   return new Promise((resolve, reject) => {
@@ -45,8 +51,13 @@ const getDateTimeOriginal = (imgFile) => { // imgFile = full path to uploaded im
           reject(error);
         } else {
           console.log('Exif data', exifData); // Do something with your data!
-          // coordinates below should be an array of GPS coordinates in decimal format: [longitude, latitude]
-          const dateTimeOriginal = exifData.exif.DateTimeOriginal;
+          //Check if the image has datetime
+          let dateTimeOriginal;
+          if (exifData.exif.DateTimeOriginal === undefined) {
+            dateTimeOriginal = null;
+          } else {
+            dateTimeOriginal = exifData.exif.DateTimeOriginal;
+          }
           resolve(dateTimeOriginal);
         }
       });
@@ -56,8 +67,7 @@ const getDateTimeOriginal = (imgFile) => { // imgFile = full path to uploaded im
   });
 };
 
-
 module.exports = {
   getCoordinates,
-  getDateTimeOriginal
+  getDateTimeOriginal,
 };

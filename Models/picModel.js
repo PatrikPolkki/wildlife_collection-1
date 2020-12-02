@@ -87,7 +87,7 @@ const getPicUserId = async (pic_id) => {
     const [rows] = await promisePool.execute('SELECT wop_testpic.user_id\n' +
         ' FROM wop_testpic\n' +
         '  WHERE wop_testpic.pic_id = ?;', [pic_id]);
-
+    return rows[0];
   } catch (e) {
     console.error(e.message);
   }
@@ -118,14 +118,17 @@ const insertPic = async (req) => {
 const deletePic = async (pic_id) => {
   console.log('picModel deletePic pic_id: ', pic_id);
   try {
-    const [rows] = await promisePool.execute('DELETE FROM wop_testpic WHERE pic_id = ?', [pic_id])
-    const [rows2] = await promisePool.execute('DELETE FROM wop_testcomments WHERE pic_id = ?', [pic_id])
-    const [rows3] = await promisePool.execute('DELETE FROM wop_testlikes WHERE pic_id = ?', [pic_id])
+    const [rows] = await promisePool.execute(
+        'DELETE FROM wop_testpic WHERE pic_id = ?', [pic_id]);
+    const [rows2] = await promisePool.execute(
+        'DELETE FROM wop_testcomments WHERE pic_id = ?', [pic_id]);
+    const [rows3] = await promisePool.execute(
+        'DELETE FROM wop_testlikes WHERE pic_id = ?', [pic_id]);
     return 'deleted pic and associated likes and comments';
   } catch (e) {
     console.error(e.message);
   }
-}
+};
 
 module.exports = {
   getAllPics,
@@ -135,7 +138,7 @@ module.exports = {
   getPicsByMostLikes,
   getPicsBySearch,
   getPicUserId,
-  deletePic
+  deletePic,
 };
 
 

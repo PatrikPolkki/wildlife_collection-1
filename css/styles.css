@@ -36,8 +36,8 @@ main {
 
 img {
     margin: 2em 0 0;
-    width: 180px;
-    height: 180px
+    width: 50%;
+    height: 50%;
 }
 
 .navbar-nav {
