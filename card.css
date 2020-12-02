@@ -120,6 +120,7 @@ body {
 }
 .comments {
     display: flex;
+    width: 100%;
     flex-direction: column;
     height: 179px;
     overflow: auto;
@@ -153,33 +154,47 @@ body {
     justify-content: flex-end;
     flex-direction: column;
 }
+.thumbs {
+    display: flex;
+    width: 50%;
+    align-items: baseline;
+    justify-content: flex-end;
+    flex-direction: column;
+}
 
 .like {
     display: flex;
     color: #3a3a3a;
     padding: 0;
     line-height: 1;
+    cursor: pointer;
 }
 .example {
     display: flex;
+    position: absolute;
     margin-top: 10px;
-    height: 100%;
+    bottom: 0px;
+    height: 79px;
+    width: 100%;
 }
-.example .commentArea {
+.commentArea {
     display: flex;
     text-align: justify;
     padding: 30px 0 0 10px;
     font-size: 17px;
     border: 0;
     float: left;
-    width: 75%;
+    width: 65%;
     background: #f1f1f1;
     overflow: auto;
     resize: none;
 }
+.commentArea:focus {
+    padding: 0 0 0 10px;
+}
 
 #commentForm {
-    width: 25%;
+    width: 35%;
 }
 #commentForm button {
     font-weight: bold;
@@ -222,5 +237,24 @@ body {
 }
 
 .exit:hover {
+    transform: scale(1.1);
+}
+.loginExit {
+    position: absolute;
+    top: 0;
+    right: 0;
+    /* background: #bcb3b3; */
+    width: fit-content;
+    height: fit-content;
+    /* border-radius: 50%; */
+    padding: 0 5px;
+    text-align: center;
+    font-size: 1.7rem;
+    text-decoration: none;
+    color: var(--primary);
+    transition: .5s;
+}
+
+.loginExit:hover {
     transform: scale(1.1);
 }
