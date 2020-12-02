@@ -28,24 +28,13 @@ const injectFile = (req, res, next) => {
 
 router.get('/', picController.pic_list_get);
 
-router.get('/mostlikes', picController.pic_list_get_by_most_likes)
+router.get('/mostlikes', picController.pic_list_get_by_most_likes);
 
-router.get('/search/:input', picController.pic_list_get_by_search)
-/*
-router.route('/')
-    //.get(picController.pic_list_get)
-    .post(
-    upload.single('pic'),
-    picController.make_thumbnail,
-    injectFile,
-    [
-      body('owner', 'must be at least 3 characters long').isLength({min: 1}),
-      body('description', 'must be at least a character long').
-          isLength({min: 1}),
-      body('type', 'not image').contains('image'),
-    ],
-    picController.pic_create);
-*/
+router.get('/search/:input', picController.pic_list_get_by_search);
+
+router.get('/picuserid/:pic_id', picController.get_pic_user_id);
+
+router.delete('/delete/:pic_id', picController.pic_delete);
 
 router.route('/')
     //.get(picController.pic_list_get)
@@ -59,7 +48,6 @@ router.route('/')
           body('type', 'not image').contains('image'),
         ],
         picController.pic_create);
-
 
 router.route('/userpics').get(picController.pic_get_by_owner);
 

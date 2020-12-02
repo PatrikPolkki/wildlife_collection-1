@@ -20,6 +20,7 @@ const but2 = document.querySelector('#but2');
 const but3 = document.querySelector('#but3');
 const but4 = document.querySelector('#but4');
 const logOut = document.querySelector('#log-out');
+logOut.style.display = 'none';
 const interactionModal = document.querySelector('#interaction-modal');
 const mapModal = document.querySelector('#map-modal');
 const closeInteractionModal = document.querySelector(
@@ -286,14 +287,14 @@ const createPicCards = async (pics) => {
       description.innerHTML = pic.description;
 
       const owner = document.createElement('p');
-      const postDate = pic.post_date.replace('T', ' ').replace('Z', '');
+      const postDate = pic.post_date//.replace('T', ' ').replace('Z', '');
       owner.innerHTML = `Posted by ${pic.name} ${pic.lastname} on ${postDate}`;
 
       const coords = document.createElement('p');
       coords.innerHTML = pic.coords;
 
       const date = document.createElement('p');
-      const photoTakenDate = pic.date.replace('T', ' ').replace('Z', '');
+      const photoTakenDate = pic.date//.replace('T', ' ').replace('Z', '');
       date.innerHTML = `Photo taken: ${photoTakenDate}`;
 
       const li = document.createElement('li');
@@ -305,6 +306,53 @@ const createPicCards = async (pics) => {
       li.appendChild(owner);
       li.appendChild(coords);
       li.appendChild(date);
+
+      // Used to check if currently logged in user owner of the pic (or admin)
+      const checkOwnerShip = async () => {
+        const fetchOptions = {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+            'Content-Type': 'application/json',
+          },
+        };
+        const response = await fetch(url + '/pic/picuserid/' + pic.pic_id,
+            fetchOptions);
+        //console.log('owner status:', json);
+        return await response.json();
+      };
+
+      // Check if the logged user owns the photo, if so make button to be allowed to delete the photo
+      const checkOwner = await checkOwnerShip().then((result) => {
+        if (result.result === true) {
+          const deletePicButton = document.createElement('p');
+          deletePicButton.innerHTML = `<svg style="width: 20px; height: 20px" aria-hidden="true" focusable="false" data-prefix="fad" data-icon="trash" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-trash fa-w-14 fa-3x"><g class="fa-group"><path fill="currentColor" d="M53.2 467L32 96h384l-21.2 371a48 48 0 0 1-47.9 45H101.1a48 48 0 0 1-47.9-45z" class="fa-secondary"></path><path fill="currentColor" d="M0 80V48a16 16 0 0 1 16-16h120l9.4-18.7A23.72 23.72 0 0 1 166.8 0h114.3a24 24 0 0 1 21.5 13.3L312 32h120a16 16 0 0 1 16 16v32a16 16 0 0 1-16 16H16A16 16 0 0 1 0 80z" class="fa-primary"></path></g></svg>`;
+          deletePicButton.addEventListener('click', async (evt) => {
+            evt.preventDefault();
+            console.log(`Delete pressed at ${pic.pic_id}`);
+            try {
+              const options = {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+                },
+              };
+              console.log(options);
+              const response = await fetch(
+                  url + '/pic/delete/' + pic.pic_id, options);
+              const json = await response.json();
+              console.log('Delete response: ', json);
+
+            } catch (e) {
+              console.log(e.message);
+            }
+            await getPicsByOwner();
+          });
+          li.appendChild(deletePicButton);
+        }
+      });
+      await checkOwner;
+
       picsList.appendChild(li);
 
     }
@@ -441,6 +489,7 @@ loginForm.addEventListener('submit', async (evt) => {
     // Hide login and registration forms
     loginWrapper.style.display = 'none';
     registerWrapper.style.display = 'none';
+    logOut.style.display = 'block';
 
     await getPicsByOwner();
   }
@@ -482,12 +531,12 @@ logOut.addEventListener('click', async (evt) => {
     // Show login and registration forms again
     loginWrapper.style.display = 'block';
     registerWrapper.style.display = 'block';
+    logOut.style.display = 'none';
 
   } catch (e) {
     console.log(e.message);
   }
 });
-
 
 const getLikes = async (pic_id) => {
   try {
@@ -549,7 +598,9 @@ const isToken = (sessionStorage.getItem('token'));
 // Check for the token...if it exists do these
 if (isToken) {
   getPicsByOwner().then(() => {
-    //console.log('token: ', sessionStorage.getItem('token'));
+    loginWrapper.style.display = 'none';
+    registerWrapper.style.display = 'none';
+    logOut.style.display = 'block';
   });
 } else {
   console.log('No token, log in plz');

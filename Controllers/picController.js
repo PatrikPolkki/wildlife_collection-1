@@ -13,19 +13,19 @@ const pic_list_get = async (req, res) => {
 const pic_list_get_by_most_likes = async (req, res) => {
   const pics = await picModel.getPicsByMostLikes();
   await res.json(pics);
-}
+};
 
 const pic_list_get_by_search = async (req, res) => {
   const input = '%' + req.params.input + '%';
   console.log(input);
-  const pics = await picModel.getPicsBySearch(input)
+  const pics = await picModel.getPicsBySearch(input);
   await res.json(pics);
-}
+};
 
 const pic_create = async (req, res) => {
   //here we will create a pic with data coming from req
-  console.log('req for testing: ', req);
-  console.log('picContoller pic_create', req.body, req.file, req.params.id);
+  //console.log('picContoller pic_create', req.body, req.file, req.params.id);
+  console.log('req.file: ', req.file);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log('validation', errors.array());
@@ -36,14 +36,22 @@ const pic_create = async (req, res) => {
   req.body.id = req.user.user_id;
 
   //get gps coordinates from image
-  const coords = await ImageMeta.getCoordinates(req.file.path);
-  console.log('coords', coords);
-  req.body.coords = coords;
+  if (req.file.mimetype === 'image/jpeg') {
+    const coords = await ImageMeta.getCoordinates(req.file.path);
+    console.log('coords', coords);
+    req.body.coords = coords;
+  } else {
+    req.body.coords = null;
+  }
 
   //get timestamp from image
-  const dateTimeOriginal = await ImageMeta.getDateTimeOriginal(req.file.path);
-  console.log('dateTimeOriginal', dateTimeOriginal);
-  req.body.dateTimeOriginal = dateTimeOriginal;
+  if (req.file.mimetype === 'image/jpeg') {
+    const dateTimeOriginal = await ImageMeta.getDateTimeOriginal(req.file.path);
+    console.log('dateTimeOriginal', dateTimeOriginal);
+    req.body.dateTimeOriginal = dateTimeOriginal;
+  } else {
+    req.body.dateTimeOriginal = null;
+  }
 
   //get post_date = current time
   let date = new Date();
@@ -62,7 +70,7 @@ const pic_create = async (req, res) => {
 //Used to create thumbnails with sharp --> resize.js
 const make_thumbnail = async (req, res, next) => {
   try {
-    const ready = await makeThumbnail({width: 250, height: 250}, req.file.path,
+    const ready = await makeThumbnail({width: 500, height: 500}, req.file.path,
         './thumbnails/' + req.file.filename);
     if (ready) {
       console.log('make_thumbnail', ready);
@@ -80,11 +88,33 @@ const pic_get_by_owner = async (req, res) => {
   await res.json(pic);
 };
 
+// Send true if user is the owner of picture else send false
+const get_pic_user_id = async (req, res) => {
+  const pickOwner = await picModel.getPicUserId(req.params.pic_id);
+  if (pickOwner.user_id === req.user.user_id || req.user.admin === 1) {
+    await res.status(200).send({'result': true});
+  } else {
+    await res.status(200).send({'result': false});
+  }
+};
+
+const pic_delete = async (req, res) => {
+  // Check user_id of the pic (=owner)
+  const pickOwner = await picModel.getPicUserId(req.params.pic_id);
+
+  if (pickOwner.user_id === req.user.user_id || req.user.admin === 1) {
+    const picDeleted = await picModel.deletePic(req.params.pic_id);
+    await res.json(picDeleted);
+  }
+};
+
 module.exports = {
   pic_list_get,
   pic_create,
   make_thumbnail,
   pic_get_by_owner,
   pic_list_get_by_most_likes,
-  pic_list_get_by_search
+  pic_list_get_by_search,
+  get_pic_user_id,
+  pic_delete,
 };
