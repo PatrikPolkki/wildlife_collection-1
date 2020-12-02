@@ -2,7 +2,7 @@
 
 const picModel = require('../Models/picModel');
 const {validationResult} = require('express-validator');
-const ImageMeta = require('../utils/imageMeta');
+const ImageMeta = require('../Utils/imageMeta');
 const {makeThumbnail} = require('../Utils/resize');
 
 const pic_list_get = async (req, res) => {

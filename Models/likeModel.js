@@ -1,5 +1,5 @@
 'use strict';
-const pool = require('../database/db');
+const pool = require('../Database/db');
 const promisePool = pool.promise();
 
 const getLikesById = async (id) => {
