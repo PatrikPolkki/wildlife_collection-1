@@ -1,5 +1,5 @@
 'use strict';
-const url = 'https://localhost:8000';
+const url = 'http://localhost:3000';
 mapboxgl.accessToken = 'pk.eyJ1IjoicGV4aSIsImEiOiJja2hhN241bzYweXBtMnBuenA5Y3NxOGlmIn0.b1NkQwYNPY04r4MBe99rBQ';
 const map = new mapboxgl.Map({
   container: 'map', // container id
