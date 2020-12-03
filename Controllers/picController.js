@@ -71,7 +71,7 @@ const pic_create = async (req, res) => {
 const make_thumbnail = async (req, res, next) => {
   try {
     const ready = await makeThumbnail({width: 500, height: 500}, req.file.path,
-        './thumbnails/' + req.file.filename);
+        './Thumbnails/' + req.file.filename);
     if (ready) {
       console.log('make_thumbnail', ready);
       next();
