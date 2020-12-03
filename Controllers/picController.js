@@ -91,7 +91,7 @@ const pic_get_by_owner = async (req, res) => {
 // Send true if user is the owner of picture else send false
 const get_pic_user_id = async (req, res) => {
   const pickOwner = await picModel.getPicUserId(req.params.pic_id);
-  if (pickOwner.user_id === req.user.user_id || req.user.admin === 1) {
+  if (pickOwner.user_id == req.user.user_id || req.user.admin === 1) {
     await res.status(200).send({'result': true});
   } else {
     await res.status(200).send({'result': false});
