@@ -1,5 +1,5 @@
 'use strict';
-const url = 'http://localhost:3000';
+const url = 'https://localhost:8000';
 mapboxgl.accessToken = 'pk.eyJ1IjoicGV4aSIsImEiOiJja2hhN241bzYweXBtMnBuenA5Y3NxOGlmIn0.b1NkQwYNPY04r4MBe99rBQ';
 const map = new mapboxgl.Map({
   container: 'map', // container id
@@ -61,7 +61,7 @@ const createPicCards = async (pics) => {
 
       const img = document.createElement('img');
 
-      img.src = url + '/thumbnails/' + pic.filename;
+      img.src = url + '/Thumbnails/' + pic.filename;
 
       //Create and Display modal on image click
       img.addEventListener('click', async (evt) => {
@@ -218,7 +218,7 @@ const createPicCards = async (pics) => {
 
         //Append clicked image to the opening modal
         const modalPic = document.createElement('img');
-        modalPic.src = img.src = url + '/thumbnails/' + pic.filename;
+        modalPic.src = img.src = url + '/Thumbnails/' + pic.filename;
         modalPic.id = 'modalPic';
         modalContent.insertBefore(modalPic, modalContent.firstChild);
 
