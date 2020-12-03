@@ -102,7 +102,7 @@ const pic_delete = async (req, res) => {
   // Check user_id of the pic (=owner)
   const pickOwner = await picModel.getPicUserId(req.params.pic_id);
 
-  if (pickOwner.user_id === req.user.user_id || req.user.admin === 1) {
+  if (pickOwner.user_id == req.user.user_id || req.user.admin === 1) {
     const picDeleted = await picModel.deletePic(req.params.pic_id);
     await res.json(picDeleted);
   }
