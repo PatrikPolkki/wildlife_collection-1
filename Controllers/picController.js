@@ -2,7 +2,7 @@
 
 const picModel = require('../Models/picModel');
 const {validationResult} = require('express-validator');
-const ImageMeta = require('../utils/imageMeta');
+const ImageMeta = require('../Utils/imageMeta');
 const {makeThumbnail} = require('../Utils/resize');
 
 const pic_list_get = async (req, res) => {
@@ -71,7 +71,7 @@ const pic_create = async (req, res) => {
 const make_thumbnail = async (req, res, next) => {
   try {
     const ready = await makeThumbnail({width: 500, height: 500}, req.file.path,
-        './thumbnails/' + req.file.filename);
+        './Thumbnails/' + req.file.filename);
     if (ready) {
       console.log('make_thumbnail', ready);
       next();
@@ -91,7 +91,7 @@ const pic_get_by_owner = async (req, res) => {
 // Send true if user is the owner of picture else send false
 const get_pic_user_id = async (req, res) => {
   const pickOwner = await picModel.getPicUserId(req.params.pic_id);
-  if (pickOwner.user_id === req.user.user_id || req.user.admin === 1) {
+  if (pickOwner.user_id == req.user.user_id || req.user.admin === 1) {
     await res.status(200).send({'result': true});
   } else {
     await res.status(200).send({'result': false});
@@ -102,7 +102,7 @@ const pic_delete = async (req, res) => {
   // Check user_id of the pic (=owner)
   const pickOwner = await picModel.getPicUserId(req.params.pic_id);
 
-  if (pickOwner.user_id === req.user.user_id || req.user.admin === 1) {
+  if (pickOwner.user_id == req.user.user_id || req.user.admin === 1) {
     const picDeleted = await picModel.deletePic(req.params.pic_id);
     await res.json(picDeleted);
   }
