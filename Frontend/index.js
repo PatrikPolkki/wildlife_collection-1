@@ -12,6 +12,7 @@ const mapDiv = document.querySelector('#map');
 const picsList = document.querySelector('#pics-list');
 picsList.style.listStyle = 'none';
 const picForm = document.querySelector('#add-pic-form');
+const videoForm = document.querySelector('#add-video-form');
 const registerForm = document.querySelector('#register-form');
 const loginForm = document.querySelector('#login-form');
 const searchForm = document.querySelector('#pic-search-form');
@@ -19,6 +20,7 @@ const but = document.querySelector('#but');
 const but2 = document.querySelector('#but2');
 const but3 = document.querySelector('#but3');
 const but4 = document.querySelector('#but4');
+const but5 = document.querySelector('#but5');
 const logOut = document.querySelector('#log-out');
 logOut.style.display = 'none';
 const interactionModal = document.querySelector('#interaction-modal');
@@ -287,14 +289,14 @@ const createPicCards = async (pics) => {
       description.innerHTML = pic.description;
 
       const owner = document.createElement('p');
-      const postDate = pic.post_date//.replace('T', ' ').replace('Z', '');
+      const postDate = pic.post_date;//.replace('T', ' ').replace('Z', '');
       owner.innerHTML = `Posted by ${pic.name} ${pic.lastname} on ${postDate}`;
 
       const coords = document.createElement('p');
       coords.innerHTML = pic.coords;
 
       const date = document.createElement('p');
-      const photoTakenDate = pic.date//.replace('T', ' ').replace('Z', '');
+      const photoTakenDate = pic.date;//.replace('T', ' ').replace('Z', '');
       date.innerHTML = `Photo taken: ${photoTakenDate}`;
 
       const li = document.createElement('li');
@@ -362,6 +364,42 @@ const createPicCards = async (pics) => {
   }
 };
 
+const createVideoCards = async (videos) => {
+  //Clear so if new a new video is added, the whole json is loaded again and has to be rendered again
+  picsList.innerHTML = '';
+  try {
+
+    for await (const vid of videos) {
+
+      const video = document.createElement('video');
+
+      video.src = url + '/Videos/' + vid.filename;
+      video.width = 320;
+      video.height = 240;
+      video.controls = true;
+
+      const description = document.createElement('p');
+      description.innerHTML = vid.description;
+
+      const owner = document.createElement('p');
+      const postDate = vid.post_date.replace('T', ' ').replace('Z', '');
+      owner.innerHTML = `Posted by ${vid.name} ${vid.lastname} on ${postDate}`;
+
+      const li = document.createElement('li');
+
+      li.appendChild(video);
+      li.appendChild(description);
+      li.appendChild(owner);
+
+      picsList.appendChild(li);
+
+    }
+
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+
 // Returns all pics starting from newest
 const getAllPicks = async () => {
   try {
@@ -412,6 +450,22 @@ const getUsers = async () => {
   }
 };
 
+const getAllVideos = async () => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/video', options);
+    const videos = await response.json();
+    console.log(videos);
+    await createVideoCards(videos);
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+
 // Create a pic and likes related to that pic
 picForm.addEventListener('submit', async (evt) => {
   //Create the pic
@@ -441,6 +495,24 @@ picForm.addEventListener('submit', async (evt) => {
   const interactionJson = await setLikes.json();
   console.log('add response', interactionJson);
 
+});
+
+// Create a video
+videoForm.addEventListener('submit', async (evt) => {
+  //Create the pic
+  evt.preventDefault();
+  const fd = new FormData(videoForm);
+  const fetchOptions = {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+    },
+    body: fd,
+  };
+  const response = await fetch(url + '/video', fetchOptions);
+  const json = await response.json();
+  console.log('add video response', json);
+  console.log('json.video_id', json.video_id);
 });
 
 // Register
@@ -624,6 +696,11 @@ but3.addEventListener('click', async (evt) => {
 
 but4.addEventListener('click', async (evt) => {
   mapModal.style.display = 'block';
+});
+
+but5.addEventListener('click', async (evt) => {
+  evt.preventDefault();
+  await getAllVideos();
 });
 
 

@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const passport = require('./Utils/pass');
 const rootRoute = require('./Routes/rootRoute');
 const picRoute = require('./Routes/picRoute');
+const videoRoute = require('./Routes/videoRoute');
 const userRoute = require('./Routes/userRoute');
 const authRoute = require('./Routes/authRoute');
 const likeRoute = require('./Routes/likeRoute');
@@ -27,6 +28,8 @@ app.use(express.static('.'));
 //Serve static files from thumbnails.
 app.use('/Thumbnails', express.static('Thumbnails'));
 
+app.use('/Videos', express.static('Videos'));
+
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 if (process.env.NODE_ENV === 'production') {
   require('./production')(app, process.env.PORT);
@@ -37,6 +40,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use('/', rootRoute);
 app.use('/auth', authRoute);
 app.use('/pic', passport.authenticate('jwt', {session: false}), picRoute);
+app.use('/video', passport.authenticate('jwt', {session: false}), videoRoute);
 app.use('/user', passport.authenticate('jwt', {session: false}), userRoute);
 app.use('/likes', passport.authenticate('jwt', {session: false}), likeRoute);
 app.use('/comments', passport.authenticate('jwt', {session: false}),

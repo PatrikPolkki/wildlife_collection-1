@@ -31,6 +31,7 @@
 <button id="but2">Display current user's photos</button>
 <button id="but3">Search all by most liked</button>
 <button id="but4">Display map</button>
+<button id="but5">Display all videos</button>
 
 <header style="display: none">
     <img class="logo" src="154865.png" alt="picture of a logo">
@@ -68,6 +69,15 @@
             <!--<input type="text" name="owner" placeholder="Owner" required="">-->
             <input type="text" name="description" placeholder="Description" required="">
             <input type="file" name="pic" accept="image/*" placeholder="Choose file">
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+    <div>
+        <h3>Add Video</h3>
+        <form enctype="multipart/form-data" id="add-video-form">
+            <input type="text" name="description" placeholder="Description" required="">
+            <input type="file" name="video" accept="video/*" placeholder="Choose file">
             <button type="submit">Upload</button>
         </form>
     </div>
