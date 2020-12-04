@@ -58,9 +58,12 @@ body {
 }
 
 /* landing css */
-
+.entiia {
+    padding-top: 90px;
+    background: #c5bfbf66;
+    text-align: center;
+}
 .container {
-    padding-top: 80px;
     display: flex;
     flex-direction: column;
     background: #c5bfbf66;
@@ -70,9 +73,10 @@ body {
 }
 .galleryArea {
     display: flex;
-    margin: 0 50px 10px 50px;
+    margin: 10px 50px 10px 50px;
     flex-wrap: wrap;
     flex-direction: row;
+    border-top: solid 2px darkgray;
     justify-content: center;
 }
 .small-card {

@@ -9,6 +9,7 @@ const picRoute = require('./Routes/picRoute');
 const userRoute = require('./Routes/userRoute');
 const authRoute = require('./Routes/authRoute');
 const likeRoute = require('./Routes/likeRoute');
+const noTokenLikeRoute = require('./Routes/noTokenLikeRoute');
 const commentRoute = require('./Routes/commentRoute');
 
 const app = express();
@@ -33,6 +34,9 @@ app.use('/Thumbnails', express.static('Thumbnails'));
 
 app.use('/', rootRoute);
 app.use('/auth', authRoute);
+app.use('/notokenpic', picRoute);
+app.use('/notokenlikes', noTokenLikeRoute);
+app.use('/notokencomments', commentRoute);
 app.use('/pic', passport.authenticate('jwt', {session: false}), picRoute);
 app.use('/user', passport.authenticate('jwt', {session: false}), userRoute);
 app.use('/likes', passport.authenticate('jwt', {session: false}), likeRoute);
