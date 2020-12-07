@@ -35,6 +35,12 @@ const pic_create = async (req, res) => {
   //Add jwt payload user_id as part of body
   req.body.id = req.user.user_id;
 
+  // Check if the image has any exifData
+  const isExifdata = await ImageMeta.checkExifdata(req.file.path);
+  console.log(isExifdata);
+
+
+if (isExifdata) {
   //get gps coordinates from image
   if (req.file.mimetype === 'image/jpeg') {
     const coords = await ImageMeta.getCoordinates(req.file.path);
@@ -52,7 +58,10 @@ const pic_create = async (req, res) => {
   } else {
     req.body.dateTimeOriginal = null;
   }
-
+} else {
+  req.body.coords = null;
+  req.body.dateTimeOriginal = null;
+}
   //get post_date = current time
   let date = new Date();
   date = date.toISOString().split('T')[0] + ' '
