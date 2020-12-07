@@ -9,6 +9,7 @@ const videoRoute = require('./Routes/videoRoute');
 const userRoute = require('./Routes/userRoute');
 const authRoute = require('./Routes/authRoute');
 const likeRoute = require('./Routes/likeRoute');
+const noTokenLikeRoute = require('./Routes/noTokenLikeRoute');
 const commentRoute = require('./Routes/commentRoute');
 const app = express();
 
@@ -39,6 +40,9 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use('/', rootRoute);
 app.use('/auth', authRoute);
+app.use('/notokenpic', picRoute);
+app.use('/notokenlikes', noTokenLikeRoute);
+app.use('/notokencomments', commentRoute);
 app.use('/pic', passport.authenticate('jwt', {session: false}), picRoute);
 app.use('/video', passport.authenticate('jwt', {session: false}), videoRoute);
 app.use('/user', passport.authenticate('jwt', {session: false}), userRoute);

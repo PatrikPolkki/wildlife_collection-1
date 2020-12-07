@@ -27,14 +27,13 @@ const user_create = async (req, res) => {
   //res.send(user);
 };
 
-const get_user_login = async (req, res) => {
-  console.log(req.user);
-  res.json({'name': req.user.name, 'lastname' : req.user.lastname});
+const check_username = async (req, res) => {
+  res.json({'name': req.user.name, 'lastname': req.user.lastname});
 }
 
 module.exports = {
   user_list_get,
   user_get_by_id,
   user_create,
-  get_user_login
+  check_username
 }
