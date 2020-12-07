@@ -2,9 +2,9 @@
     box-sizing: border-box;
 }
 .search {
+    display: flex;
     background: #c5bfbf66;
     padding: 100px 20% 0;
-    display: flex;
     flex-direction: column;
 }
 .getPics {
@@ -14,10 +14,17 @@
     width: 100%;
 }
 .getPics p {
+    font-family: "JetBrains Mono";
+    cursor: pointer;
     text-align: center;
     margin: 0;
     padding-top: 4px;
     flex: 50%;
+    font-weight: 500;
+    font-size: 20px;
+}
+.getPics p:hover{
+    background: lightgrey;
 }
 .latestPics {
     border-bottom: solid 2px grey;

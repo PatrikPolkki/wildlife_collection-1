@@ -20,4 +20,5 @@ router.post('/',
 */
 router.get('/:id', userController.user_get_by_id);
 
+router.get('/check/userlogged', userController.check_username);
 module.exports = router;

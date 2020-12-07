@@ -78,23 +78,23 @@ body {
     height: 475px;
     background-color: white;
     z-index: 1;
-    padding: 35px 0 0 0;
+    padding: 30px 0 0 0;
     box-shadow: 15px 0 35px rgba(0,0,0,0.1);
 }
 .header {
     display: flex;
-    flex-direction: column;
-    padding: 0 25px 10px 25px;
+    flex: 10%;
+    justify-content: center;
 }
 .header div{
     display: flex;
-    align-items: center;
+    justify-content: center;
 }
 .header div .username {
-    margin-right: 10px;
+    text-align: center;
+    font-family: 'JetBrains Mono';
     font-size: 2rem;
     color: #333;
-    line-height: 1;
 }
 .header div .location {
     background-color: var(--primary);
@@ -111,12 +111,24 @@ body {
     text-transform: capitalize;
 }
 .des, .header {
-    border-bottom: 1px solid #dadada;
+    border-bottom: 3px solid #dadada;
 }
 
 .des {
     display: flex;
+    flex-direction: column;
+    flex: 61%;
     padding: 10px 0;
+}
+.description {
+    padding: 0 10px;
+    margin-bottom: 10px;
+}
+.descriptionText {
+    padding: 0 7px 0 7px;
+    font-family: 'Raleway';
+    font-weight: 500;
+    font-size: 18px;
 }
 .comments {
     display: flex;
@@ -125,23 +137,40 @@ body {
     height: 179px;
     overflow: auto;
 }
+.userComment {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+    margin: 4px;
+    border-bottom: 1px solid #BDBDBD;
+}
+.commentOwner {
+    font-family: 'JetBrains Mono';
+    /* padding: 5px; */
+    font-weight: 400;
+    font-size: 12px;
+}
 .commentText {
     display: flex;
-    color: #555;
-    font-size: 17px;
-    padding: 0 10px;
-    border-top: 1px solid #dadada;
+    /* color: #555; */
+    font-family: 'Raleway';
+    font-weight: 500;
+    font-size: 18px;
 }
 .likeSection {
     display: flex;
     flex-direction: column;
     padding: 10px 25px 0 10px;
+    flex: 15%;
 }
 .date {
+    font-family: 'Raleway';
     display: flex;
     width: 100%;
     color: #3a3a3a;
     margin-bottom: 10px;
+    font-size: 17px;
+    font-weight: 300;
 }
 .likes {
     display: flex;
@@ -168,26 +197,28 @@ body {
     padding: 0;
     line-height: 1;
     cursor: pointer;
+    font-family: 'JetBrains Mono';
+
 }
 .example {
     display: flex;
-    position: absolute;
-    margin-top: 10px;
-    bottom: 0px;
-    height: 79px;
-    width: 100%;
+    /* position: absolute; */
+    /* margin-top: 10px; */
+    /* bottom: 0px; */
+    /* height: 100%; */
+    /* width: 100%; */
+    flex: 15%;
 }
 .commentArea {
     display: flex;
     text-align: justify;
-    padding: 30px 0 0 10px;
+    padding: 2px 0 0 10px;
     font-size: 17px;
     border: 0;
     float: left;
     width: 65%;
     background: #f1f1f1;
     overflow: auto;
-    resize: none;
 }
 .commentArea:focus {
     padding: 0 0 0 10px;

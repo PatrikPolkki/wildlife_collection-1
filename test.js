@@ -12,6 +12,8 @@ let marker;
 
 const body = document.querySelector('body');
 const galleryArea = document.querySelector('.galleryArea');
+const search = document.querySelector('.search');
+const header = document.querySelector('.entiia');
 
 const cardContainer = document.querySelector('.card-container');
 const gradient = document.querySelector('.gradient');
@@ -22,6 +24,7 @@ const deleteButton = document.querySelector('.deleteButton');
 const closeInteractionModel = document.querySelector('.exit');
 const closeHeroForm = document.querySelector('.loginExit');
 const closeMapModal = document.querySelector('.exitMap');
+const closeAddImage = document.querySelector('.addImageExit');
 
 const registerForm = document.querySelector('#register');
 const loginForm = document.querySelector('#login');
@@ -56,6 +59,11 @@ closeMapModal.addEventListener('click', async (evt) => {
   evt.preventDefault();
   document.querySelector('.map-container').style.display = 'none';
   marker.remove();
+});
+//closes add image
+closeAddImage.addEventListener('click', (evt) => {
+  evt.preventDefault();
+  document.querySelector('.addImageContainer').style.display = 'none';
 });
 
 //creates small image cards and by clicking by them it opens up larger image card with more information and functionalites
@@ -121,13 +129,25 @@ const createPicCards = async (pics) => {
         username.innerHTML = `${pic.name} ${pic.lastname}`;
         document.querySelector('.header div').appendChild(username);
 
+        const descriptionText = document.createElement('p');
+        descriptionText.className = 'descriptionText';
+        descriptionText.innerHTML = `${pic.description}`;
+        document.querySelector('.description').appendChild(descriptionText);
+
         const comments = await getComments(pic.pic_id);
         console.log(comments);
         comments.forEach((comment) => {
+          const userComment = document.createElement('div');
+          userComment.className = 'userComment';
+          const commentOwner = document.createElement('p');
+          commentOwner.className = 'commentOwner';
+          commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
           const commentText = document.createElement('p');
           commentText.className = 'commentText';
           commentText.innerHTML += comment.comment;
-          commentsection.appendChild(commentText);
+          userComment.appendChild(commentOwner);
+          userComment.appendChild(commentText);
+          commentsection.appendChild(userComment);
         });
 
         const date = document.createElement('div');
@@ -221,7 +241,7 @@ const createPicCards = async (pics) => {
         commentArea.name = 'comment';
         commentArea.removeAttribute('readonly');
         const commentButton = document.querySelector('.commentButton');
-        commentButton.removeAttribute('disabled')
+        commentButton.removeAttribute('disabled');
         const modalForm = document.querySelector('#commentForm');
 
         //Post a comment to selected photo
@@ -435,8 +455,6 @@ const createPicCardsNoToken = async (pics) => {
         interactionModalLikeButton.innerHTML = `&#x1F44D; ${updatedLikes[0].likes}`;
         interactionModalDislikeButton.innerHTML = `&#128078; ${updatedLikes[0].dislikes}`;
 
-
-
         // Used to check if currently logged in user owner of the pic (or admin)
         const checkOwnerShip = async () => {
           const fetchOptions = {
@@ -484,7 +502,24 @@ const getAllPicksNoToken = async () => {
     const pics = await response.json();
     console.log(pics);
 
+    search.style.display = 'flex';
     showNotLoggedNav();
+    await createPicCardsNoToken(pics);
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+const getAllPicksByMostLikesNoToken = async () => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/notokenpic/mostlikes', options);
+    const pics = await response.json();
+    console.log(pics);
+    search.style.display = 'flex';
     await createPicCardsNoToken(pics);
   } catch (e) {
     console.log(e.message);
@@ -502,13 +537,18 @@ const getAllPicks = async () => {
     const pics = await response.json();
     console.log(pics);
 
-    showLoggedNav();
+    search.style.display = 'flex';
+    header.innerHTML = 'LATEST';
+    header.style.paddingTop = '90px'
+    document.querySelector('.buttonHolder').style.display = 'none';
+    document.querySelector('.jotain').style.display = 'none';
+    await showLoggedNav();
     await createPicCards(pics);
   } catch (e) {
     console.log(e.message);
   }
 };
-const getPicsByOwner = async () => {
+const getPicsByOwner = async (picsNumber) => {
   try {
     const options = {
       headers: {
@@ -519,6 +559,65 @@ const getPicsByOwner = async () => {
     const pics = await response.json();
     console.log(pics);
     await createPicCards(pics);
+
+    picsNumber = 0;
+    for (const pic in pics) {
+      picsNumber += 1;
+    }
+    console.log('picnumber', picsNumber);
+    document.querySelector('.userInfo p').innerHTML = `${picsNumber} Photos`;
+
+
+    search.style.display = 'none';
+    header.innerHTML = '';
+    header.style.paddingTop = '0';
+
+    document.querySelector('.buttonHolder').style.display = 'flex';
+    document.querySelector('.jotain').style.display = 'flex';
+    if (pics.length === 0) {
+      console.log('pics is empty');
+      const noImages = document.createElement('div');
+      noImages.style.display = 'flex';
+      noImages.style.justifyContent = 'center';
+      noImages.style.width = '100%';
+      noImages.style.height = '100%';
+      noImages.style.padding = '50px 0 200px 0';
+      noImages.innerHTML = `<h4 style="font-family: Raleway; font-weight: 600; font-size: 20px">You Don't Have Any Picture</h4>`;
+      galleryArea.appendChild(noImages);
+    }
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+const getAllPicksByMostLikes = async () => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/pic/mostlikes', options);
+    const pics = await response.json();
+    console.log(pics);
+    search.style.display = 'flex';
+    await createPicCards(pics);
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+
+const checkUsername = async () => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+        'Content-Type': 'application/json',
+      },
+    };
+    const response = await fetch(url + '/user/check/userlogged', options);
+    const username = await response.json();
+    console.log(username);
+    header.innerHTML = `${username.name} ${username.lastname}`;
   } catch (e) {
     console.log(e.message);
   }
@@ -573,7 +672,7 @@ loginForm.addEventListener('submit', async (evt) => {
     // Hide login and registration forms
     hero.style.display = 'none';
     body.style.overflow = 'auto';
-    showLoggedNav();
+    await showLoggedNav();
 
     await getAllPicks();
   }
@@ -582,7 +681,6 @@ loginForm.addEventListener('submit', async (evt) => {
 //Logout logged in user
 const logout = document.querySelector('.logOut');
 logout.addEventListener('click', async (evt) => {
-  evt.preventDefault();
 
   try {
     const options = {
@@ -597,11 +695,72 @@ logout.addEventListener('click', async (evt) => {
     sessionStorage.removeItem('token');
     alert('You have logged out');
 
-
-    galleryArea.innerHTML = '';
+    await getAllPicksNoToken();
     showNotLoggedNav();
   } catch (e) {
     console.log(e.message);
+  }
+});
+
+// Search form
+const searchForm = document.querySelector('.searchForm');
+searchForm.addEventListener('submit', async (evt) => {
+  evt.preventDefault();
+  const fetchOptions = {
+    method: 'GET',
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      'Content-Type': 'application/json',
+    },
+  };
+  console.log(fetchOptions);
+
+  if (sessionStorage.getItem('token')) {
+    const response = await fetch(
+        url + '/pic/search/' + document.querySelector('#search-input').value,
+        fetchOptions);
+    const json = await response.json();
+    console.log('add response', json);
+    await createPicCards(json);
+  } else {
+    const response = await fetch(
+        url + '/notokenpic/search/' +
+        document.querySelector('#search-input').value,
+        fetchOptions);
+    const json = await response.json();
+    console.log('add response', json);
+    await createPicCardsNoToken(json);
+  }
+});
+
+//latest and mostliked
+const latest = document.querySelector('.latestPics');
+const mostLiked = document.querySelector('.mostlikedPics');
+latest.addEventListener('click', (evt) => {
+  if (sessionStorage.getItem('token')) {
+    getAllPicks();
+    latest.style.borderBottom = 'solid 2px grey';
+    mostLiked.style.borderBottom = 'solid 1px darkgray';
+    header.innerHTML = 'LATEST';
+  } else {
+    getAllPicksNoToken();
+    latest.style.borderBottom = 'solid 2px grey';
+    mostLiked.style.borderBottom = 'solid 1px darkgray';
+    header.innerHTML = 'LATEST';
+  }
+});
+
+mostLiked.addEventListener('click', (evt) => {
+  if (sessionStorage.getItem('token')) {
+    getAllPicksByMostLikes();
+    latest.style.borderBottom = 'solid 1px darkgray';
+    mostLiked.style.borderBottom = 'solid 2px grey';
+    header.innerHTML = 'MOST LIKED';
+  } else {
+    getAllPicksByMostLikesNoToken();
+    latest.style.borderBottom = 'solid 1px darkgray';
+    mostLiked.style.borderBottom = 'solid 2px grey';
+    header.innerHTML = 'MOST LIKED';
   }
 });
 
@@ -609,14 +768,88 @@ logout.addEventListener('click', async (evt) => {
 const profile = document.querySelector('.profile');
 profile.addEventListener('click', async (evt) => {
   evt.preventDefault();
-  getPicsByOwner();
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+        'Content-Type': 'application/json',
+      },
+    };
+    const response = await fetch(url + '/user/check/userlogged', options);
+    const username = await response.json();
+    console.log(username);
+    document.querySelector('.userInfo h1').innerHTML = `${username.name} ${username.lastname}`;
+    await getPicsByOwner();
+  } catch (e) {
+    console.log(e.message);
+  }
 });
 
 const logo = document.querySelector('.logo');
 logo.addEventListener('click', async (evt) => {
   evt.preventDefault();
-  getAllPicks();
+  await getAllPicks();
 });
+
+const addImage = document.querySelector('.addImage');
+addImage.addEventListener('click', (evt) => {
+  console.log(evt);
+  evt.preventDefault();
+  document.querySelector('.addImageContainer').style.display = 'flex';
+});
+
+const input = document.querySelector('.addImageInputField');
+input.addEventListener('change', (evt) => {
+  loadFile(event);
+
+  const fileLabel = document.querySelector('#fileLabel');
+  const file = document.querySelector('#file');
+  if (file.value === '') {
+    fileLabel.innerHTML = 'Choose file';
+  } else {
+    const theSplit = file.value.split('\\');
+    fileLabel.innerHTML = theSplit[theSplit.length - 1];
+  }
+});
+
+
+// Create a pic and likes related to that pic
+const picForm = document.querySelector('#addImageId');
+picForm.addEventListener('submit', async (evt) => {
+  //Create the pic
+  evt.preventDefault();
+  const fd = new FormData(picForm);
+  const fetchOptions = {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+    },
+    body: fd,
+  };
+  const response = await fetch(url + '/pic', fetchOptions);
+  const json = await response.json();
+  console.log('add response', json);
+  console.log('json.pick_id', json.pic_id);
+
+  // Create the likes and dislikes for pic
+  const likeCreationOptions = {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+    },
+  };
+  const setLikes = await fetch(url + '/likes/' + json.pic_id,
+      likeCreationOptions);
+  const interactionJson = await setLikes.json();
+  console.log('add response', interactionJson);
+
+});
+
+//creates small image from image you want to post
+const loadFile = (event) => {
+  const image = document.getElementById('output');
+  image.src = URL.createObjectURL(event.target.files[0]);
+};
 
 //likes and comments
 const getLikes = async (pic_id) => {
@@ -678,8 +911,6 @@ const getCommentsNoToken = async (pic_id) => {
   }
 };
 
-
-
 //add marker into map
 const addMarker = (coords) => {
   map.setCenter(coords);
@@ -692,6 +923,8 @@ const clearCardContainer = () => {
   document.querySelector('.header div').innerHTML = '';
   commentsection.innerHTML = '';
 
+  document.querySelector('.description').innerHTML = '';
+
   likeSection.innerHTML = '';
   likeSection.innerHTML = '';
 
@@ -699,19 +932,33 @@ const clearCardContainer = () => {
 
   cardContainer.style.display = 'none';
   body.style.overflow = 'auto';
-}
-const showLoggedNav = () => {
-  links.style.display = 'none';
-  istokenLinks.style.display = 'flex';
-
-  document.querySelector('.logOut').innerHTML = 'Log Out';
-  document.querySelector('.profile').innerHTML = 'Profile';
 };
+const showLoggedNav = async () => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+        'Content-Type': 'application/json',
+      },
+    };
+    const response = await fetch(url + '/user/check/userlogged', options);
+    const username = await response.json();
+    console.log(username);
+    links.style.display = 'none';
+    istokenLinks.style.display = 'flex';
+
+    document.querySelector('.logOut').innerHTML = 'Log Out';
+    document.querySelector(
+        '.profile').innerHTML = `${username.name} ${username.lastname}`;
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+
 const showNotLoggedNav = () => {
   links.style.display = 'flex';
   istokenLinks.style.display = 'none';
 
-  document.querySelector('.mainlinks').innerHTML = 'About';
   document.querySelector('.navRegister').innerHTML = 'Register';
   document.querySelector('.navLogin').innerHTML = 'Log In';
 };
