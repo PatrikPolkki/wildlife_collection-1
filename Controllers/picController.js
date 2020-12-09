@@ -118,7 +118,7 @@ const make_thumbnail = async (req, res, next) => {
   //If the posted media is image and not video, create thumbnail and resize
   if (req.file.mimetype.includes('image')) {
     try {
-      const ready = await makeThumbnail({width: 1000, height: 1000},
+      const ready = await makeThumbnail({width: 800, height: 800},
           req.file.path,
           './Thumbnails/' + req.file.filename);
       if (ready) {
