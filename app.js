@@ -29,8 +29,6 @@ app.use(express.static('.'));
 //Serve static files from thumbnails.
 app.use('/Thumbnails', express.static('Thumbnails'));
 
-app.use('/Videos', express.static('Videos'));
-
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 if (process.env.NODE_ENV === 'production') {
   require('./production')(app, process.env.PORT);

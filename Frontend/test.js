@@ -89,7 +89,7 @@ const createPicCards = async (pics) => {
       smallCard.className = 'small-card';
 
       const img = document.createElement('img');
-      img.src = url + '/thumbnails/' + pic.filename;
+      img.src = url + '/Thumbnails/' + pic.filename;
 
       smallCard.appendChild(img);
 
@@ -125,7 +125,7 @@ const createPicCards = async (pics) => {
         });
         //Append clicked image to the opening modal
         const modalPic = document.createElement('img');
-        modalPic.src = img.src = url + '/uploads/' + pic.filename;
+        modalPic.src = img.src = url + '/Thumbnails/' + pic.filename;
         gradient.appendChild(modalPic);
 
         const username = document.createElement('h1');
@@ -445,7 +445,7 @@ const createPicCardsNoToken = async (pics) => {
       smallCard.className = 'small-card';
 
       const img = document.createElement('img');
-      img.src = url + '/thumbnails/' + pic.filename;
+      img.src = url + '/Thumbnails/' + pic.filename;
 
       smallCard.appendChild(img);
 
@@ -481,7 +481,7 @@ const createPicCardsNoToken = async (pics) => {
         });
         //Append clicked image to the opening modal
         const modalPic = document.createElement('img');
-        modalPic.src = img.src = url + '/thumbnails/' + pic.filename;
+        modalPic.src = img.src = url + '/Thumbnails/' + pic.filename;
         gradient.appendChild(modalPic);
 
         const username = document.createElement('h1');
@@ -604,7 +604,7 @@ const getAllPicksNoToken = async () => {
         'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
       },
     };
-    const response = await fetch(url + '/notokenpic', options);
+    const response = await fetch(url + '/notokenpic/pics', options);
     const pics = await response.json();
     console.log(pics);
 
@@ -654,7 +654,7 @@ const getAllPicks = async () => {
         'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
       },
     };
-    const response = await fetch(url + '/pic', options);
+    const response = await fetch(url + '/pic/pics', options);
     const pics = await response.json();
     console.log(pics);
 
