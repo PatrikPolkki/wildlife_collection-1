@@ -17,15 +17,16 @@
     height: 480px;
     position: relative;
     margin: 6% auto;
-    background: white;
+    background: #FAFAFA;;
     padding: 5px;
     overflow: hidden;
+    border-radius: 7px;
 }
 .button-box {
     width: 220px;
     margin: 35px auto;
     position: relative;
-    box-shadow: 0 0 20px 9px #ff61241f;
+    box-shadow: 0 0 20px 9px #1e932b29;
     border-radius: 30px;
 }
 .toggle-btn {
@@ -42,17 +43,19 @@
     position: absolute;
     width: 110px;
     height: 100%;
-    background: linear-gradient(to right, #ff105f, #ffad06);
+    background: linear-gradient(to right, #388E3C, #81C784);
     border-radius: 30px;
     transition: .5s;
 }
 .input-group {
-    top: 180px;
     position: absolute;
     width: 280px;
     transition: .5s;
 }
 .input-field {
+    font-family: 'JetBrains Mono';
+    font-weight: 400;
+    font-size: 16px;
     width: 100%;
     padding: 10px 0;
     margin: 5px 0;
@@ -69,18 +72,23 @@
     cursor: pointer;
     display: block;
     margin: auto;
-    background: linear-gradient(to right, #ff105f, #ffad06);
+    background: linear-gradient(to right, #388E3C, #81C784);
     border: 0;
     outline: none;
     border-radius: 30px;
+    font-family: 'Raleway';
+    font-weight: 500;
+    font-size: 17px;
 }
 .check-box {
     margin: 30px 10px 30px 0;
 }
 span {
-    color: #777;
+    font-family: 'JetBrains Mono';
+    font-weight: 500;
     font-size: 12px;
-    bottom: 68px;
+    color: #777;
+    bottom: 67px;
     position: absolute;
 }
 #login {

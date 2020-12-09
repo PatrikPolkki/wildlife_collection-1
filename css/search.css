@@ -3,7 +3,7 @@
 }
 .search {
     display: flex;
-    background: #c5bfbf66;
+    background: #ffffff0d;
     padding: 100px 20% 0;
     flex-direction: column;
 }
@@ -46,7 +46,7 @@ form.searchForm button {
     float: left;
     width: 20%;
     padding: 10px;
-    background: #2196F3;
+    background: #43A047;;
     color: white;
     font-size: 17px;
     border: 1px solid grey;
@@ -55,7 +55,7 @@ form.searchForm button {
 }
 
 form.searchForm button:hover {
-    background: #0b7dda;
+    background: #2E7D32;
 }
 
 form.searchForm::after {

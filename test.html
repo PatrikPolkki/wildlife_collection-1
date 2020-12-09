@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
     <title>Wildlife Collection</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="card.css">
-    <link rel="stylesheet" href="login.css">
-    <link rel="stylesheet" href="map.css">
-    <link rel="stylesheet" href="profileInformation.css">
-    <link rel="stylesheet" href="search.css">
+    <link rel="stylesheet" href="css/style1.css">
+    <link rel="stylesheet" href="css/card.css">
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/profileInformation.css">
+    <link rel="stylesheet" href="css/search.css">
     <script src="https://kit.fontawesome.com/a81368914c.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300&family=Raleway:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800;900&family=Raleway:wght@100;200;300;400;500;600;700&family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet'/>
 
 </head>
@@ -81,7 +81,6 @@
             </div>
             <div class="des">
                 <div class="description">
-                    <p class="descriptionText">
                     </p>
                 </div>
                 <div class="comments">
@@ -92,11 +91,6 @@
                 <!--cardModel date and likes-->
             </div>
             <div class="example">
-
-                <textarea placeholder="Comment something" class="commentArea" form="commentForm" readonly></textarea>
-                <form id="commentForm">
-                    <button class="commentButton" type="submit" disabled>Post</button>
-                </form>
             </div>
             <a href="#" class="exit"><i class="fas fa-times"></i></a>
             <div class="deleteButton" style="cursor: pointer"></div>
@@ -136,7 +130,7 @@
     <div class="addImageForm">
         <h2>ADD IMAGE</h2>
         <form enctype="multipart/form-data" id="addImageId" class="addImageInput">
-            <input type="file" name="pic" id="file" class="addImageInputField" data-multiple-caption="{count} files selected"  accept="image/*">
+            <input type="file" name="pic" id="file" class="addImageInputField" data-multiple-caption="{count} files selected"  accept="video/*|image/*">
             <label for="file" id="fileLabel">CHOOSE FILE</label>
             <div>
                 <img id="output" alt="No Images Chosen" width="150px" height="150px" style="object-fit: cover; border: #3a3a3a 1px solid">
@@ -149,7 +143,7 @@
     </div>
 </div>
 <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
-<script src="test.js"></script>
+<script src="Frontend/test.js"></script>
 <script src="./Frontend/serialize.js"></script>
 </body>
 </html>
