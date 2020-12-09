@@ -1,14 +1,8 @@
-:root {
-    --primary: #22abfa;
-}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-body {
-    background: #efefef;
 }
 
 .card-container {
@@ -51,15 +45,15 @@ body {
 
 .map {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 8px;
+    right: 8px;
     background: white;
     width: 50px;
     border-radius: 50%;
     text-align: center;
     font-size: 1.3rem;
     text-decoration: none;
-    color: var(--primary);
+    color: #43A047;
     transition: .5s;
 }
 .map:hover {
@@ -93,11 +87,10 @@ body {
 .header div .username {
     text-align: center;
     font-family: 'JetBrains Mono';
-    font-size: 2rem;
+    font-size: 1.4rem;;
     color: #333;
 }
 .header div .location {
-    background-color: var(--primary);
     text-transform: uppercase;
     color: white;
     padding: 3px 10px;
@@ -110,44 +103,47 @@ body {
     margin-top: 3px;
     text-transform: capitalize;
 }
-.des, .header {
-    border-bottom: 3px solid #dadada;
-}
+
 
 .des {
     display: flex;
     flex-direction: column;
     flex: 61%;
-    padding: 10px 0;
+    overflow: auto;
 }
 .description {
-    padding: 0 10px;
-    margin-bottom: 10px;
+    padding: 0 1px 9px;
+    /* margin-bottom: 10px; */
+    line-height: 1;
+    border-bottom: 2px solid #E0E0E0;
 }
 .descriptionText {
-    padding: 0 7px 0 7px;
+    padding: 1px 3px 0;
     font-family: 'Raleway';
     font-weight: 500;
-    font-size: 18px;
+    font-size: 15px;
 }
 .comments {
+    border-bottom: 2px solid #E0E0E0;
     display: flex;
+    padding: 4px;
     width: 100%;
     flex-direction: column;
-    height: 179px;
+    height: 100%;
     overflow: auto;
 }
 .userComment {
     display: flex;
     flex-direction: column;
     line-height: 1;
-    margin: 4px;
+    padding: 8px 0;
     border-bottom: 1px solid #BDBDBD;
+    margin: 0 10px;
 }
 .commentOwner {
     font-family: 'JetBrains Mono';
     /* padding: 5px; */
-    font-weight: 400;
+    font-weight: 600;
     font-size: 12px;
 }
 .commentText {
@@ -155,7 +151,7 @@ body {
     /* color: #555; */
     font-family: 'Raleway';
     font-weight: 500;
-    font-size: 18px;
+    font-size: 13px;
 }
 .likeSection {
     display: flex;
@@ -164,35 +160,40 @@ body {
     flex: 15%;
 }
 .date {
-    font-family: 'Raleway';
+    font-family: 'Roboto Condensed', sans-serif;
     display: flex;
     width: 100%;
     color: #3a3a3a;
-    margin-bottom: 10px;
-    font-size: 17px;
+    padding-left: 1px;
+    font-size: 13px;
     font-weight: 300;
 }
 .likes {
     display: flex;
     flex-wrap: nowrap;
+    height: 100%;
 }
 .thumbs {
     display: flex;
     width: 50%;
-    align-items: baseline;
-    justify-content: flex-end;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
 }
-.thumbs {
-    display: flex;
-    width: 50%;
-    align-items: baseline;
-    justify-content: flex-end;
-    flex-direction: column;
+.thumbsIcon {
+    width: fit-content;
+    height: fit-content;
+    padding: 0 5px;
+    text-align: center;
+    font-size: 1.7rem;
+    text-decoration: none;
+    color: #43A047;;
+    transition: .5s;
+    margin-right: 4px;
 }
-
 .like {
     display: flex;
+    align-items: flex-end;
     color: #3a3a3a;
     padding: 0;
     line-height: 1;
@@ -235,7 +236,7 @@ body {
     height: 100%;
     padding: 10px;
     background: #f1f1f1;
-    color: #2196F3;
+    color: #43A047;
     font-size: 17px;
     border: 0;
     border-left: none;
@@ -263,7 +264,7 @@ body {
     text-align: center;
     font-size: 1.7rem;
     text-decoration: none;
-    color: var(--primary);
+    color: #43A047;;
     transition: .5s;
 }
 .exit:hover {
@@ -272,7 +273,7 @@ body {
 
 .deleteButton {
     position: absolute;
-    top: 0;
+    top: 2px;
     left: 0;
 }
 .delete {
@@ -282,9 +283,9 @@ body {
     /* border-radius: 50%; */
     padding: 0 5px;
     text-align: center;
-    font-size: 1.7rem;
+    font-size: 1.4rem;
     text-decoration: none;
-    color: var(--primary);
+    color: #43A047;
     transition: .5s;
 }
 .delete:hover {
@@ -303,10 +304,28 @@ body {
     text-align: center;
     font-size: 1.7rem;
     text-decoration: none;
-    color: var(--primary);
+    color: #43A047;;
     transition: .5s;
 }
 
 .loginExit:hover {
     transform: scale(1.1);
+}
+
+@media only screen and (max-width: 550px) {
+    .card-container {
+        padding: 76px 0 0;
+        height: 100%;
+    }
+    .card {
+        flex-direction: column;
+        height: 100%;
+    }
+    .background {
+        height: 50%;
+    }
+    .info {
+        height: 50%;
+        width: 100%;
+    }
 }

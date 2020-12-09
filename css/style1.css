@@ -1,6 +1,8 @@
 body {
-    background: #fff;
-
+    background-image: url("fog-3622519_1280.jpg");
+    background-attachment: fixed;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
     font-family: 'JetBrains Mono', monospace;
     overflow: auto;
     margin: 0px !important;
@@ -31,11 +33,14 @@ body {
     border-bottom-right-radius: 10px;
 }
 .nav .links a{
+    font-family: "JetBrains Mono";
     cursor: pointer;
-    margin-right: 25px;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 600;
     color: black;
+}
+.nav .links a:first-child {
+    margin-right: 30px;
 }
 
 .nav .otherLinks {
@@ -63,14 +68,14 @@ body {
     font-family: "JetBrains Mono";
     font-weight: 200;
     padding-top: 90px;
-    background: #c5bfbf66;
+    background: #ffffff0d;
     text-align: center;
     font-size: 25px;
 }
 .container {
     display: flex;
     flex-direction: column;
-    background: #c5bfbf66;
+    background: #ffffff0d;
     width: 100%;
     overflow: hidden;
     min-height: 100vh;
@@ -166,6 +171,7 @@ body {
     color: #70b757e3;
 }
 
+/* Responsive */
 @media only screen and (max-width: 550px) {
     .galleryArea {
         flex-direction: column;
@@ -176,6 +182,34 @@ body {
         flex: none;
         margin: 10px 0;
         width: 100%;
+    }
+    .nav {
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 20px 20px 15px;
+        height: auto;
+        overflow-y: hidden;
+    }
+    .nav h4 {
+        font-size: 6vw;
+        margin-bottom: 14px;
+    }
+    .nav .links a {
+        margin-right: 12px;
+        font-size: 14px;
+    }
+    .nav .otherLinks a {
+        margin-right: 12px;
+        font-size: 14px;
+    }
+    .search {
+        padding: 120px 20% 0 !important;
+    }
+    .jotain {
+        padding: 120px 0 25px !important;
+    }
+    .userInfo h1 {
+        font-size: 32px !important;
     }
 }
 @media only screen and (min-width: 1300px) {

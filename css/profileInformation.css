@@ -4,8 +4,8 @@
     flex-wrap: nowrap;
     justify-content: center;
     width: 100%;
-    padding: 100px 241px 25px;
-    background: #c5bfbf66;
+    padding: 100px 0 25px;
+    background: #ffffff0d;
 }
 
 .jotain div {
@@ -35,7 +35,7 @@
 .buttonHolder {
     display: none;
     justify-content: center;
-    background: #c5bfbf66;
+    background: #ffffff0d;
 }
 
 .addImage {
@@ -75,7 +75,7 @@
     flex-direction: column;
     align-items: center;
     position: relative;
-    background: #E0E0E0;
+    background: #FAFAFA;
     padding: 5px;
     border-radius: 7px;
 }
@@ -97,7 +97,7 @@
 
 .addImageInput {
     display: flex;
-    width: 400px;
+    width: 85%;
     transition: .5s;
     flex-direction: column;
     padding: 10px;
@@ -106,7 +106,7 @@
 
 .addImageInput button {
     padding: 0.3em 3em;
-    border: 0.12eem solid darkslategray;
+    border: 0.12em solid darkslategray;
     text-decoration: none;
     font-family: 'JetBrains Mono';
     font-weight: 400;
@@ -179,7 +179,6 @@
     text-align: center;
     font-size: 1.7rem;
     text-decoration: none;
-    color: var(--primary);
     transition: .5s;
 }
 

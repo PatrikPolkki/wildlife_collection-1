@@ -1,137 +1,150 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" xmlns:https="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8" content="width=device-width, initial-scale=1" name="viewport">
-    <title>Example</title>
+    <title>Wildlife Collection</title>
+    <link rel="stylesheet" href="css/style1.css">
+    <link rel="stylesheet" href="css/card.css">
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/profileInformation.css">
+    <link rel="stylesheet" href="css/search.css">
+    <script src="https://kit.fontawesome.com/a81368914c.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800;900&family=Raleway:wght@100;200;300;400;500;600;700&family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet'/>
-    <link rel="stylesheet" href="./css/styles.css">
 
 </head>
 <body>
-<div id="map-modal" class="modal" style="z-index: 2">
-
-    <!-- Modal content -->
-    <div id="map-content">
-        <span id="close-map-modal">&times;</span>
-        <div style="width: 100%; height: 50%" id="map"></div>
+<div class="wrapper">
+    <div class="nav">
+        <div class="logo" style="cursor: pointer">
+            <h4>Wildlife Collection</h4>
+        </div>
+        <div class="links">
+            <a class="navRegister"></a>
+            <a class="navLogin"></a>
+        </div>
+        <div class="otherLinks">
+            <a class="logOut"></a>
+            <a class="profile"></a>
+        </div>
     </div>
+    <!-- landing page -->
 
-</div>
-
-
-<nav class="navbar">
-    <ul class="navbar-nav">
-        <li class="nav-item">Home</li>
-        <li class="nav-item">About</li>
-        <li class="nav-item ">PH</li>
-        <li class="nav-item">Login</li>
-    </ul>
-</nav>
-
-<button id="but">Display all the pics ordered by newest</button>
-<button id="but2">Display current user's photos</button>
-<button id="but3">Search all by most liked</button>
-<button id="but4">Display map</button>
-<button id="but5">Display all videos</button>
-<button id="but6">Check user login</button>
-
-<header style="display: none">
-    <img class="logo" src="154865.png" alt="picture of a logo">
-    <h1>Social media sharing,<br/>Riled Up</h1>
-
-    <p>Wildlife pictures</p>
-</header>
-
-<!-- The Modal -->
-<div id="interaction-modal" class="modal">
-
-    <!-- Modal content -->
-    <div id="modal-content">
-        <span id="close-interaction-modal">&times;</span>
-        <!--<form id="interaction-form">
-            <input style="width: 50%; height: 5%" id="modal-input" type="text" name="comment" pattern=".{3,}"
-                   placeholder="Write your comment about this photo here" required>
-            <button id="modal-send-comment-button" type="submit">Send comment</button>
-        </form>-->
-    </div>
-
-</div>
-
-<main>
-
-    <header id="log-out">
-        <p id="user-info"></p>
-        <button>Log out</button>
-    </header>
-
-
-    <div>
-        <h3>Add picture</h3>
-        <form enctype="multipart/form-data" id="add-pic-form">
-            <!--<input type="text" name="owner" placeholder="Owner" required="">-->
-            <input type="text" name="description" placeholder="Description" required="">
-            <input type="file" name="pic" accept="image/*" placeholder="Choose file">
-            <button type="submit">Upload</button>
-        </form>
-    </div>
-
-    <div>
-        <h3>Add Video</h3>
-        <form enctype="multipart/form-data" id="add-video-form">
-            <input type="text" name="description" placeholder="Description" required="">
-            <input type="file" name="video" accept="video/*" placeholder="Choose file">
-            <button type="submit">Upload</button>
-        </form>
-    </div>
-
-    <div id="register-wrapper">
-        <h3>Register</h3>
-        <form class="light-border" id="register-form">
-            <input type="text" name="name" pattern=".{3,}" placeholder="Name" required>
-            <input type="text" name="lastname" pattern=".{3,}" placeholder="Last name" required>
-            <input type="email" name="email" placeholder="email" required>
-            <input type="password" name="password" pattern="(?=.*[A-Z]).{8,}"
-                   placeholder="Password" required>
-            <button type="submit">Register</button>
-        </form>
-    </div>
-
-    <div id="login-wrapper">
-        <h3>Login</h3>
-        <form id="login-form">
-            <div>
-                <label>Email:</label>
-                <input type="text" name="username"/>
-            </div>
-            <div>
-                <label>Password:</label>
-                <input type="password" name="password"/>
-            </div>
-            <div>
-                <button type="submit">Log In</button>
-            </div>
-        </form>
-    </div>
-
-    <div>
-        <form id="pic-search-form">
-            <input style="width: 50%; height: 5%" id="search-input" type="text" name="comment" pattern=".{3,}"
-                   placeholder="Search for photos..." required
+    <div class="search">
+        <form class="searchForm">
+            <input type="text" id="search-input" name="comment" pattern=".{3,}" placeholder="Search for photos..." required
                    oninvalid="this.setCustomValidity('Input has to be atleast 3 characters long')"
                    oninput="this.setCustomValidity('')">
-            <button id="pic-search-button" type="submit">Search photos</button>
+            <button type="submit"><i class="fa fa-search"></i></button>
         </form>
+        <div class="getPics">
+            <p class="latestPics">Latest</p>
+            <p class="mostlikedPics">Most Liked</p>
+        </div>
     </div>
 
-    <ul id="pics-list">
-        <!-- Pictures go here-->
-    </ul>
+    <div class="jotain">
+        <div class="userInfo">
+            <h1></h1>
+            <p>Images 52</p>
+        </div>
+    </div>
 
+    <h4 class="entiia">LATEST</h4>
+    <div class="buttonHolder">
+        <button class="addImage">ADD IMAGE</button>
+    </div>
+    <div class="container">
+        <div class="galleryArea">
+            <!--All the picture comes in here-->
+        </div>
+    </div>
+</div>
+<div class="card-container" >
+    <div class="card">
+        <div class="background">
+            <div class="gradients">
+                <div class="gradient">
+                    <!--cardModel of clicked photo comes here-->
+                </div>
+            </div>
+            <a href="#" class="map"><i class="fas fa-map-marker-alt"></i></a>
+        </div>
+        <div class="info">
+            <div class="header">
+                <div>
+                    <!--cardModel username-->
+                </div>
 
-</main>
+            </div>
+            <div class="des">
+                <div class="description">
+                    </p>
+                </div>
+                <div class="comments">
+                    <!--cardModel comments-->
+                </div>
+            </div>
+            <div class="likeSection">
+                <!--cardModel date and likes-->
+            </div>
+            <div class="example">
+            </div>
+            <a href="#" class="exit"><i class="fas fa-times"></i></a>
+            <div class="deleteButton" style="cursor: pointer"></div>
+        </div>
+    </div>
+</div>
+<div class="map-container">
+    <div class="bigMap" id="map">
+        <a href="#" class="exitMap"><i class="fas fa-times"></i></a>
+    </div>
+</div>
+<div class="hero">
+    <div class="form-box">
+        <div class="button-box">
+            <div id="btn"></div>
+            <button type="button" class="toggle-btn">Log in</button>
+            <button type="button" class="toggle-btn">Register</button>
+        </div>
+        <form id="login" class="input-group">
+            <input type="text" name="username" class="input-field" placeholder="Email" required>
+            <input type="password" name="password" class="input-field" placeholder="Enter Password" required>
+            <input type="checkbox" class="check-box"><span>Remember Password</span>
+            <button type="submit" class="submit-btn">Log in</button>
+        </form>
+        <form id="register" class="input-group">
+            <input type="text" name="name" pattern=".{3,}" class="input-field" placeholder="Firstname" required>
+            <input type="text" name="lastname" pattern=".{3,}" class="input-field" placeholder="LastName" required>
+            <input type="email" name="email" class="input-field" placeholder="Email" required>
+            <input type="password" name="password" pattern="(?=.*[A-Z]).{8,}" class="input-field" placeholder="Enter Password" required>
+            <input type="checkbox" class="check-box" required><span>I agree to the terms & conditions</span>
+            <button type="submit" class="submit-btn">Register</button>
+        </form>
+        <a href="#" class="loginExit"><i class="fas fa-times"></i></a>
+    </div>
+</div>
+<div class="addImageContainer">
+    <div class="addImageForm">
+        <h2>ADD IMAGE</h2>
+        <form enctype="multipart/form-data" id="addImageId" class="addImageInput">
+            <input type="file" name="pic" id="file" class="addImageInputField" data-multiple-caption="{count} files selected"  accept="video/*|image/*">
+            <label for="file" id="fileLabel">CHOOSE FILE</label>
+            <div>
+                <img id="output" alt="No Images Chosen" width="150px" height="150px" style="object-fit: cover; border: #3a3a3a 1px solid">
+                <textarea placeholder="Description" name="description" required="" class="addImageTextarea"
+                          form="addImageId" style="overflow: hidden; resize: none;" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
+            </div>
+            <button type="submit">UPLOAD</button>
+        </form>
+        <a href="#" class="addImageExit"><i class="fas fa-times"></i></a>
+    </div>
+</div>
 <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
-<script src="./Frontend/index.js"></script>
+<script src="Frontend/test.js"></script>
 <script src="./Frontend/serialize.js"></script>
-
-
 </body>
 </html>
+

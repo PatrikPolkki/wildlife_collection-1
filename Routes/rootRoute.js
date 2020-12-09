@@ -8,9 +8,9 @@ router.get('/', (req, res) => {
   console.log('rootRoute: root route with req:', req.query);
   //res.send(`Hello world <a href="cat">Click</a><br>
   //with test is ${req.query.test} and fsun is ${req.query.more}`);
-  //res.sendFile('test.html', { root: '.' });
+  //res.sendFile('index.html', { root: '.' });
   //res.send(`<h1>Hello Index page</h1>`);
-  res.render('test.html')
+  res.render('index.html')
 });
 
 router.post('/', (req, res) => {
