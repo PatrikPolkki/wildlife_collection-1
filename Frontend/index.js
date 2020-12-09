@@ -42,7 +42,7 @@ closeInteractionModal.addEventListener('click', (evt) => {
     modalContent.removeChild(
         document.querySelector('#interactionModalLikeButton'));
   }
-  if(document.querySelector('#interactionModalDislikeButton')) {
+  if (document.querySelector('#interactionModalDislikeButton')) {
     modalContent.removeChild(
         document.querySelector('#interactionModalDislikeButton'));
   }
@@ -74,91 +74,366 @@ const createPicCards = async (pics) => {
 
     for await (const pic of pics) {
 
-      // Check if user has already liked this pic
-      const getStatus = await getLikeStatus(pic.pic_id);
-      const hasLiked = getStatus.result;
-      console.log(hasLiked);
+      // If currently iterating item is of type image, not video
+      if (pic.mediatype === 'image') {
+        // Check if user has already liked this pic
+        const getStatus = await getLikeStatus(pic.pic_id);
+        const hasLiked = getStatus.result;
+        console.log('User has liked this photo / video: ', hasLiked);
 
-      const img = document.createElement('img');
+        const img = document.createElement('img');
 
-      img.src = url + '/Thumbnails/' + pic.filename;
+        img.src = url + '/Thumbnails/' + pic.filename;
 
-      //Create and Display modal on image click
-      img.addEventListener('click', async (evt) => {
-        body.style.overflow = 'hidden';
-        console.log(`Clicked pic with an id of: ${pic.pic_id}`);
-        interactionModal.style.display = 'block';
+        //Create and Display modal on image click
+        img.addEventListener('click', async (evt) => {
+          body.style.overflow = 'hidden';
+          console.log(`Clicked pic with an id of: ${pic.pic_id}`);
+          interactionModal.style.display = 'block';
 
-        const modalMapButton = document.createElement('button');
-        modalMapButton.id = 'modalMapButton';
-        modalMapButton.innerHTML = 'Display location';
+          const modalMapButton = document.createElement('button');
+          modalMapButton.id = 'modalMapButton';
+          modalMapButton.innerHTML = 'Display location';
 
-        modalMapButton.addEventListener('click', async (evt) => {
-          evt.preventDefault();
-          console.log('mapbutton coords: ', pic.coords);
-          mapModal.style.display = 'block';
+          modalMapButton.addEventListener('click', async (evt) => {
+            evt.preventDefault();
+            console.log('mapbutton coords: ', pic.coords);
+            mapModal.style.display = 'block';
 
-          try {
-            const coords = JSON.parse(pic.coords);
-            addMarker(coords);
-          } catch (e) {
+            try {
+              const coords = JSON.parse(pic.coords);
+              addMarker(coords);
+            } catch (e) {
+            }
+          });
+
+          const modalp = document.createElement('p');
+          modalp.id = 'modalp';
+
+          const interactionModalLikeButton = document.createElement('span');
+          interactionModalLikeButton.id = 'interactionModalLikeButton';
+
+          const interactionModalDislikeButton = document.createElement('span');
+          interactionModalDislikeButton.id = 'interactionModalDislikeButton';
+
+          const modalForm = document.createElement('form');
+          modalForm.id = 'modalForm';
+
+          const modalInput = document.createElement('input');
+          modalInput.id = 'modalInput';
+          modalInput.style.width = '50%';
+          modalInput.style.height = '5%';
+          modalInput.id = 'modal-input';
+          modalInput.type = 'text';
+          modalInput.name = 'comment';
+          modalInput.pattern = '.{3,}';
+          modalInput.placeholder = 'Write your comment about this photo here';
+          modalInput.required = true;
+
+          const modalButton = document.createElement('button');
+          modalButton.id = 'modalButton';
+          modalButton.innerHTML = 'Comment';
+          modalForm.appendChild(modalInput);
+          modalForm.appendChild(modalButton);
+
+          modalContent.appendChild(modalForm);
+          modalContent.appendChild(modalMapButton);
+          modalContent.appendChild(modalp);
+          modalContent.appendChild(interactionModalLikeButton);
+          modalContent.appendChild(interactionModalDislikeButton);
+
+          //Get up to date likes and comments from database then assign the value to elements
+          const updatedLikes = await getLikes(pic.pic_id);
+          if (updatedLikes[0] === undefined) {
+            interactionModalLikeButton.innerHTML = `0 &#x1F44D;`;
+            interactionModalDislikeButton.innerHTML = `0 &#128078;`;
+          } else {
+            console.log(updatedLikes);
+            interactionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
+            interactionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
           }
+
+
+          const comments = await getComments(pic.pic_id);
+          console.log(comments);
+
+          // Create comments into modelp
+          for await (const comment of comments) {
+            const commentDiv = document.createElement('div');
+            const commentp = document.createElement('p');
+            //commentSpan.innerHTML = '<svg style="width: 20px; height: 20px" aria-hidden="true" focusable="false" data-prefix="fad" data-icon="trash" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-trash fa-w-14 fa-3x"><g class="fa-group"><path fill="currentColor" d="M53.2 467L32 96h384l-21.2 371a48 48 0 0 1-47.9 45H101.1a48 48 0 0 1-47.9-45z" class="fa-secondary"></path><path fill="currentColor" d="M0 80V48a16 16 0 0 1 16-16h120l9.4-18.7A23.72 23.72 0 0 1 166.8 0h114.3a24 24 0 0 1 21.5 13.3L312 32h120a16 16 0 0 1 16 16v32a16 16 0 0 1-16 16H16A16 16 0 0 1 0 80z" class="fa-primary"></path></g></svg>'
+            //commentp.appendChild(commentSpan);
+            commentp.innerHTML += `${comment.date} ${comment.name} ${comment.lastname}: ${comment.comment}`
+            commentDiv.appendChild(commentp);
+
+            const checkOwnerShip = async () => {
+              const fetchOptions = {
+                method: 'GET',
+                headers: {
+                  'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+                  'Content-Type': 'application/json',
+                },
+              };
+              const response = await fetch(url + '/comments/commentuserid/' + comment.commentid,
+                  fetchOptions);
+              //console.log('owner status:', json);
+              return await response.json();
+            };
+
+            // Check if the logged user owns the comment, if so make button to be allowed to delete the comment
+            const checkOwner = await checkOwnerShip().then((result) => {
+              if (result.result === true) {
+                const commentSpan = document.createElement('span');
+                commentSpan.innerHTML = `<svg style="width: 20px; height: 20px" aria-hidden="true" focusable="false" data-prefix="fad" data-icon="trash" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-trash fa-w-14 fa-3x"><g class="fa-group"><path fill="currentColor" d="M53.2 467L32 96h384l-21.2 371a48 48 0 0 1-47.9 45H101.1a48 48 0 0 1-47.9-45z" class="fa-secondary"></path><path fill="currentColor" d="M0 80V48a16 16 0 0 1 16-16h120l9.4-18.7A23.72 23.72 0 0 1 166.8 0h114.3a24 24 0 0 1 21.5 13.3L312 32h120a16 16 0 0 1 16 16v32a16 16 0 0 1-16 16H16A16 16 0 0 1 0 80z" class="fa-primary"></path></g></svg>`;
+                commentSpan.addEventListener('click', async (evt) => {
+                  console.log(`Delete pressed at ${comment.commentid}`);
+                  try {
+                    const options = {
+                      method: 'DELETE',
+                      headers: {
+                        'Authorization': 'Bearer ' +
+                            sessionStorage.getItem('token'),
+                      },
+                    };
+                    console.log(options);
+                    const response = await fetch(
+                        url + '/comments/delete/' + comment.commentid, options);
+                    const json = await response.json();
+                    console.log('Delete response: ', json);
+                    commentDiv.remove();
+                  } catch (e) {
+                    console.log(e.message);
+                  }
+                });
+                commentDiv.appendChild(commentSpan);
+              }
+            });
+
+            await checkOwner;
+
+
+            commentDiv.style.border = 'thin solid #000000';
+            modalp.appendChild(commentDiv);
+          }
+
+
+          //Like chosen photo if user hasn't liked before.
+          if (!hasLiked) {
+            interactionModalLikeButton.addEventListener('click',
+                async (evt) => {
+                  evt.preventDefault();
+
+                  console.log(pic.pic_id);
+                  try {
+                    const options = {
+                      method: 'POST',
+                      headers: {
+                        'Authorization': 'Bearer ' +
+                            sessionStorage.getItem('token'),
+                      },
+                    };
+                    console.log(options);
+                    const response = await fetch(
+                        url + '/likes/incrementlike/' + pic.pic_id, options);
+                    const json = await response.json();
+                    console.log('add like response', json);
+
+                    //Fetch the updated like and update like amount
+                    const updatedLikes = await getLikes(pic.pic_id);
+                    // Remove element to get rid of event listener
+                    interactionModalLikeButton.remove();
+                    interactionModalDislikeButton.remove();
+                    const newInteractionModalLikeButton = document.createElement(
+                        'span');
+                    const newInteractionModalDislikeButton = document.createElement(
+                        'span');
+                    newInteractionModalLikeButton.id = 'newInteractionModalLikeButton';
+                    newInteractionModalDislikeButton.id = 'newInteractionModalDislikeButton';
+                    newInteractionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
+                    newInteractionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
+                    modalp.after(newInteractionModalLikeButton);
+                    newInteractionModalLikeButton.after(
+                        newInteractionModalDislikeButton);
+
+                    //... to outside the modal too
+                    likes.remove();
+                    dislikes.remove();
+                    const newLikes = document.createElement('p');
+                    const newDislikes = document.createElement('span');
+                    newLikes.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
+                    newDislikes.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
+                    img.after(newLikes);
+                    newLikes.after(newDislikes);
+
+                  } catch (e) {
+                    console.log(e.message);
+                  }
+                });
+
+            //Dislike chosen photo
+            interactionModalDislikeButton.addEventListener('click',
+                async (evt) => {
+                  evt.preventDefault();
+
+                  console.log(pic.pic_id);
+                  try {
+                    const options = {
+                      method: 'POST',
+                      headers: {
+                        'Authorization': 'Bearer ' +
+                            sessionStorage.getItem('token'),
+                      },
+                    };
+                    console.log(options);
+                    const response = await fetch(
+                        url + '/likes/incrementdislike/' + pic.pic_id, options);
+                    const json = await response.json();
+                    console.log('add like response', json);
+
+                    //Fetch the updated dislike and update dislike amount
+                    const updatedLikes = await getLikes(pic.pic_id);
+                    interactionModalLikeButton.remove();
+                    interactionModalDislikeButton.remove();
+                    const newInteractionModalLikeButton = document.createElement(
+                        'span');
+                    const newInteractionModalDislikeButton = document.createElement(
+                        'span');
+                    newInteractionModalLikeButton.id = 'newInteractionModalLikeButton';
+                    newInteractionModalDislikeButton.id = 'newInteractionModalDislikeButton';
+                    newInteractionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
+                    newInteractionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
+                    modalp.after(newInteractionModalLikeButton);
+                    newInteractionModalLikeButton.after(
+                        newInteractionModalDislikeButton);
+
+                    //... to outside the modal too
+                    likes.remove();
+                    dislikes.remove();
+                    const newLikes = document.createElement('p');
+                    const newDislikes = document.createElement('span');
+                    newLikes.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
+                    newDislikes.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
+                    img.after(newLikes);
+                    newLikes.after(newDislikes);
+
+                  } catch (e) {
+                    console.log(e.message);
+                  }
+                });
+          }
+          //Post a comment to selected photo
+          modalForm.addEventListener('submit', async (evt) => {
+            evt.preventDefault();
+            const data = serializeJson(modalForm);
+            const fetchOptions = {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+            };
+            console.log(fetchOptions);
+            const response = await fetch(
+                url + `/comments/${pic.pic_id}`, fetchOptions);
+            const json = await response.json();
+            console.log('add comment response', json);
+
+            // Update comments into modal in real time after posting comment
+            const comments = await getComments(pic.pic_id);
+            console.log(comments);
+            modalp.innerHTML = '';
+
+            // Create comments into modelp
+            for await (const comment of comments) {
+              const commentDiv = document.createElement('div');
+              const commentp = document.createElement('p');
+              //commentSpan.innerHTML = '<svg style="width: 20px; height: 20px" aria-hidden="true" focusable="false" data-prefix="fad" data-icon="trash" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-trash fa-w-14 fa-3x"><g class="fa-group"><path fill="currentColor" d="M53.2 467L32 96h384l-21.2 371a48 48 0 0 1-47.9 45H101.1a48 48 0 0 1-47.9-45z" class="fa-secondary"></path><path fill="currentColor" d="M0 80V48a16 16 0 0 1 16-16h120l9.4-18.7A23.72 23.72 0 0 1 166.8 0h114.3a24 24 0 0 1 21.5 13.3L312 32h120a16 16 0 0 1 16 16v32a16 16 0 0 1-16 16H16A16 16 0 0 1 0 80z" class="fa-primary"></path></g></svg>'
+              //commentp.appendChild(commentSpan);
+              commentp.innerHTML += `${comment.date} ${comment.name} ${comment.lastname}: ${comment.comment}`
+              commentDiv.appendChild(commentp);
+
+              const checkOwnerShip = async () => {
+                const fetchOptions = {
+                  method: 'GET',
+                  headers: {
+                    'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+                    'Content-Type': 'application/json',
+                  },
+                };
+                const response = await fetch(url + '/comments/commentuserid/' + comment.commentid,
+                    fetchOptions);
+                //console.log('owner status:', json);
+                return await response.json();
+              };
+
+              // Check if the logged user owns the comment, if so make button to be allowed to delete the comment
+              const checkOwner = await checkOwnerShip().then((result) => {
+                if (result.result === true) {
+                  const commentSpan = document.createElement('span');
+                  commentSpan.innerHTML = `<svg style="width: 20px; height: 20px" aria-hidden="true" focusable="false" data-prefix="fad" data-icon="trash" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-trash fa-w-14 fa-3x"><g class="fa-group"><path fill="currentColor" d="M53.2 467L32 96h384l-21.2 371a48 48 0 0 1-47.9 45H101.1a48 48 0 0 1-47.9-45z" class="fa-secondary"></path><path fill="currentColor" d="M0 80V48a16 16 0 0 1 16-16h120l9.4-18.7A23.72 23.72 0 0 1 166.8 0h114.3a24 24 0 0 1 21.5 13.3L312 32h120a16 16 0 0 1 16 16v32a16 16 0 0 1-16 16H16A16 16 0 0 1 0 80z" class="fa-primary"></path></g></svg>`;
+                  commentSpan.addEventListener('click', async (evt) => {
+                    console.log(`Delete pressed at ${comment.commentid}`);
+                    try {
+                      const options = {
+                        method: 'DELETE',
+                        headers: {
+                          'Authorization': 'Bearer ' +
+                              sessionStorage.getItem('token'),
+                        },
+                      };
+                      console.log(options);
+                      const response = await fetch(
+                          url + '/comments/delete/' + comment.commentid, options);
+                      const json = await response.json();
+                      console.log('Delete response: ', json);
+                      commentDiv.remove();
+                    } catch (e) {
+                      console.log(e.message);
+                    }
+                  });
+                  commentDiv.appendChild(commentSpan);
+                }
+              });
+
+              await checkOwner;
+
+
+              commentDiv.style.border = 'thin solid #000000';
+              modalp.appendChild(commentDiv);
+            }
+
+
+
+            /*
+            comments.forEach((comment) => {
+              modalp.innerHTML += `<p>${comment.date} ${comment.name} ${comment.lastname}: ${comment.comment}</p>`;
+            });*/
+          });
+
+          //Append clicked image to the opening modal
+          const modalPic = document.createElement('img');
+          modalPic.src = img.src = url + '/Thumbnails/' + pic.filename;
+          modalPic.id = 'modalPic';
+          modalContent.insertBefore(modalPic, modalContent.firstChild);
+
         });
 
-        const modalp = document.createElement('p');
-        modalp.id = 'modalp';
-
-        const interactionModalLikeButton = document.createElement('span');
-        interactionModalLikeButton.id = 'interactionModalLikeButton';
-
-        const interactionModalDislikeButton = document.createElement('span');
-        interactionModalDislikeButton.id = 'interactionModalDislikeButton';
-
-        const modalForm = document.createElement('form');
-        modalForm.id = 'modalForm';
-
-        const modalInput = document.createElement('input');
-        modalInput.id = 'modalInput';
-        modalInput.style.width = '50%';
-        modalInput.style.height = '5%';
-        modalInput.id = 'modal-input';
-        modalInput.type = 'text';
-        modalInput.name = 'comment';
-        modalInput.pattern = '.{3,}';
-        modalInput.placeholder = 'Write your comment about this photo here';
-        modalInput.required = true;
-
-        const modalButton = document.createElement('button');
-        modalButton.id = 'modalButton';
-        modalButton.innerHTML = 'Comment';
-        modalForm.appendChild(modalInput);
-        modalForm.appendChild(modalButton);
-
-        modalContent.appendChild(modalForm);
-        modalContent.appendChild(modalMapButton);
-        modalContent.appendChild(modalp);
-        modalContent.appendChild(interactionModalLikeButton);
-        modalContent.appendChild(interactionModalDislikeButton);
-
-        //Get up to date likes and comments from database then assign the value to elements
+        const likes = document.createElement('p');
+        likes.id = 'likes';
+        const dislikes = document.createElement('span');
         const updatedLikes = await getLikes(pic.pic_id);
         if (updatedLikes[0] === undefined) {
-          interactionModalLikeButton.innerHTML = `0 &#x1F44D;`;
-          interactionModalDislikeButton.innerHTML = `0 &#128078;`;
+          likes.innerHTML = '0 &#x1F44D;';
+          dislikes.innerHTML = '0 &#128078;';
         } else {
-          console.log(updatedLikes);
-          interactionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
-          interactionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
+          likes.innerHTML = updatedLikes[0].likes + '&#x1F44D;';
+          dislikes.innerHTML = updatedLikes[0].dislikes + '&#128078;';
         }
-        const comments = await getComments(pic.pic_id);
-        console.log(comments);
-        comments.forEach((comment) => {
-          modalp.innerHTML += `<p>${comment.date} ${comment.name} ${comment.lastname}: ${comment.comment}</p>`;
-        });
 
-        //Like chosen photo if user hasn't liked before.
+        // Incrementing for the main like button outside of modal if user hasn't liked before
         if (!hasLiked) {
-          interactionModalLikeButton.addEventListener('click', async (evt) => {
+          likes.addEventListener('click', async (evt) => {
             evt.preventDefault();
 
             console.log(pic.pic_id);
@@ -175,23 +450,7 @@ const createPicCards = async (pics) => {
               const json = await response.json();
               console.log('add like response', json);
 
-              //Fetch the updated like and update like amount
               const updatedLikes = await getLikes(pic.pic_id);
-              // Remove element to get rid of event listener
-              interactionModalLikeButton.remove();
-              interactionModalDislikeButton.remove();
-              const newInteractionModalLikeButton = document.createElement(
-                  'span');
-              const newInteractionModalDislikeButton = document.createElement(
-                  'span');
-              newInteractionModalLikeButton.id = 'newInteractionModalLikeButton';
-              newInteractionModalDislikeButton.id = 'newInteractionModalDislikeButton';
-              newInteractionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
-              newInteractionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
-              modalp.after(newInteractionModalLikeButton);
-              newInteractionModalLikeButton.after(newInteractionModalDislikeButton);
-
-              //... to outside the modal too
               likes.remove();
               dislikes.remove();
               const newLikes = document.createElement('p');
@@ -206,248 +465,141 @@ const createPicCards = async (pics) => {
             }
           });
 
-          //Dislike chosen photo
-          interactionModalDislikeButton.addEventListener('click',
-              async (evt) => {
-                evt.preventDefault();
-
-                console.log(pic.pic_id);
-                try {
-                  const options = {
-                    method: 'POST',
-                    headers: {
-                      'Authorization': 'Bearer ' +
-                          sessionStorage.getItem('token'),
-                    },
-                  };
-                  console.log(options);
-                  const response = await fetch(
-                      url + '/likes/incrementdislike/' + pic.pic_id, options);
-                  const json = await response.json();
-                  console.log('add like response', json);
-
-                  //Fetch the updated dislike and update dislike amount
-                  const updatedLikes = await getLikes(pic.pic_id);
-                  interactionModalLikeButton.remove();
-                  interactionModalDislikeButton.remove();
-                  const newInteractionModalLikeButton = document.createElement(
-                      'span');
-                  const newInteractionModalDislikeButton = document.createElement(
-                      'span');
-                  newInteractionModalLikeButton.id = 'newInteractionModalLikeButton';
-                  newInteractionModalDislikeButton.id = 'newInteractionModalDislikeButton';
-                  newInteractionModalLikeButton.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
-                  newInteractionModalDislikeButton.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
-                  modalp.after(newInteractionModalLikeButton);
-                  newInteractionModalLikeButton.after(newInteractionModalDislikeButton);
-
-                  //... to outside the modal too
-                  likes.remove();
-                  dislikes.remove();
-                  const newLikes = document.createElement('p');
-                  const newDislikes = document.createElement('span');
-                  newLikes.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
-                  newDislikes.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
-                  img.after(newLikes);
-                  newLikes.after(newDislikes);
-
-                } catch (e) {
-                  console.log(e.message);
-                }
-              });
-        }
-        //Post a comment to selected photo
-        modalForm.addEventListener('submit', async (evt) => {
-          evt.preventDefault();
-          const data = serializeJson(modalForm);
-          const fetchOptions = {
-            method: 'POST',
-            headers: {
-              'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-          };
-          console.log(fetchOptions);
-          const response = await fetch(
-              url + `/comments/${pic.pic_id}`, fetchOptions);
-          const json = await response.json();
-          console.log('add comment response', json);
-
-          const comments = await getComments(pic.pic_id);
-          console.log(comments);
-          modalp.innerHTML = '';
-          comments.forEach((comment) => {
-            modalp.innerHTML += `<p>${comment.date} ${comment.name} ${comment.lastname}: ${comment.comment}</p>`;
-          });
-        });
-
-        //Append clicked image to the opening modal
-        const modalPic = document.createElement('img');
-        modalPic.src = img.src = url + '/Thumbnails/' + pic.filename;
-        modalPic.id = 'modalPic';
-        modalContent.insertBefore(modalPic, modalContent.firstChild);
-
-      });
-
-      const likes = document.createElement('p');
-      likes.id = 'likes';
-      const dislikes = document.createElement('span');
-      const updatedLikes = await getLikes(pic.pic_id);
-      if (updatedLikes[0] === undefined) {
-        likes.innerHTML = '0 &#x1F44D;';
-        dislikes.innerHTML = '0 &#128078;';
-      } else {
-        likes.innerHTML = updatedLikes[0].likes + '&#x1F44D;';
-        dislikes.innerHTML = updatedLikes[0].dislikes + '&#128078;';
-      }
-
-      // Incrementing for the main like button outside of modal if user hasn't liked before
-      if (!hasLiked) {
-        likes.addEventListener('click', async (evt) => {
-          evt.preventDefault();
-
-          console.log(pic.pic_id);
-          try {
-            const options = {
-              method: 'POST',
-              headers: {
-                'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-              },
-            };
-            console.log(options);
-            const response = await fetch(
-                url + '/likes/incrementlike/' + pic.pic_id, options);
-            const json = await response.json();
-            console.log('add like response', json);
-
-            const updatedLikes = await getLikes(pic.pic_id);
-            likes.remove();
-            dislikes.remove();
-            const newLikes = document.createElement('p');
-            const newDislikes = document.createElement('span');
-            newLikes.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
-            newDislikes.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
-            img.after(newLikes);
-            newLikes.after(newDislikes);
-
-          } catch (e) {
-            console.log(e.message);
-          }
-        });
-
-        // Incrementing for the main dislike button outside of modal
-        dislikes.addEventListener('click', async (evt) => {
-          evt.preventDefault();
-
-          console.log(pic.pic_id);
-          try {
-            const options = {
-              method: 'POST',
-              headers: {
-                'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-              },
-            };
-            console.log(options);
-            const response = await fetch(
-                url + '/likes/incrementdislike/' + pic.pic_id, options);
-            const json = await response.json();
-            console.log('add like response', json);
-
-            //const updatedLikes = await getLikes(pic.pic_id);
-            //dislikes.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
-
-            const updatedLikes = await getLikes(pic.pic_id);
-            likes.remove();
-            dislikes.remove();
-            const newLikes = document.createElement('p');
-            const newDislikes = document.createElement('span');
-            newLikes.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
-            newDislikes.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
-            img.after(newLikes);
-            newLikes.after(newDislikes);
-
-          } catch (e) {
-            console.log(e.message);
-          }
-        });
-      }
-
-      const description = document.createElement('p');
-      description.innerHTML = pic.description;
-
-      const owner = document.createElement('p');
-      const postDate = pic.post_date;//.replace('T', ' ').replace('Z', '');
-      owner.innerHTML = `Posted by ${pic.name} ${pic.lastname} on ${postDate}`;
-
-      const coords = document.createElement('p');
-      coords.innerHTML = pic.coords;
-
-      const date = document.createElement('p');
-      const photoTakenDate = pic.date;//.replace('T', ' ').replace('Z', '');
-      date.innerHTML = `Photo taken: ${photoTakenDate}`;
-
-      const li = document.createElement('li');
-
-      li.appendChild(img);
-      li.appendChild(likes);
-      li.appendChild(dislikes);
-      li.appendChild(description);
-      li.appendChild(owner);
-      li.appendChild(coords);
-      li.appendChild(date);
-
-      // Used to check if currently logged in user owner of the pic (or admin)
-      const checkOwnerShip = async () => {
-        const fetchOptions = {
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-            'Content-Type': 'application/json',
-          },
-        };
-        const response = await fetch(url + '/pic/picuserid/' + pic.pic_id,
-            fetchOptions);
-        //console.log('owner status:', json);
-        return await response.json();
-      };
-
-      // Check if the logged user owns the photo, if so make button to be allowed to delete the photo
-      const checkOwner = await checkOwnerShip().then((result) => {
-        if (result.result === true) {
-          const deletePicButton = document.createElement('p');
-          deletePicButton.innerHTML = `<svg style="width: 20px; height: 20px" aria-hidden="true" focusable="false" data-prefix="fad" data-icon="trash" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-trash fa-w-14 fa-3x"><g class="fa-group"><path fill="currentColor" d="M53.2 467L32 96h384l-21.2 371a48 48 0 0 1-47.9 45H101.1a48 48 0 0 1-47.9-45z" class="fa-secondary"></path><path fill="currentColor" d="M0 80V48a16 16 0 0 1 16-16h120l9.4-18.7A23.72 23.72 0 0 1 166.8 0h114.3a24 24 0 0 1 21.5 13.3L312 32h120a16 16 0 0 1 16 16v32a16 16 0 0 1-16 16H16A16 16 0 0 1 0 80z" class="fa-primary"></path></g></svg>`;
-          deletePicButton.addEventListener('click', async (evt) => {
+          // Incrementing for the main dislike button outside of modal
+          dislikes.addEventListener('click', async (evt) => {
             evt.preventDefault();
-            console.log(`Delete pressed at ${pic.pic_id}`);
+
+            console.log(pic.pic_id);
             try {
               const options = {
-                method: 'DELETE',
+                method: 'POST',
                 headers: {
                   'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
                 },
               };
               console.log(options);
               const response = await fetch(
-                  url + '/pic/delete/' + pic.pic_id, options);
+                  url + '/likes/incrementdislike/' + pic.pic_id, options);
               const json = await response.json();
-              console.log('Delete response: ', json);
+              console.log('add like response', json);
+
+              //const updatedLikes = await getLikes(pic.pic_id);
+              //dislikes.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
+
+              const updatedLikes = await getLikes(pic.pic_id);
+              likes.remove();
+              dislikes.remove();
+              const newLikes = document.createElement('p');
+              const newDislikes = document.createElement('span');
+              newLikes.innerHTML = `${updatedLikes[0].likes} &#x1F44D;`;
+              newDislikes.innerHTML = `${updatedLikes[0].dislikes} &#128078;`;
+              img.after(newLikes);
+              newLikes.after(newDislikes);
 
             } catch (e) {
               console.log(e.message);
             }
-            // Refresh after deleting something.
-            await getPicsByOwner();
           });
-          li.appendChild(deletePicButton);
         }
-      });
-      await checkOwner;
 
-      picsList.appendChild(li);
+        const description = document.createElement('p');
+        description.innerHTML = pic.description;
 
+        const owner = document.createElement('p');
+        const postDate = pic.post_date;//.replace('T', ' ').replace('Z', '');
+        owner.innerHTML = `Posted by ${pic.name} ${pic.lastname} on ${postDate}`;
+
+        const coords = document.createElement('p');
+        coords.innerHTML = pic.coords;
+
+        const date = document.createElement('p');
+        const photoTakenDate = pic.date;//.replace('T', ' ').replace('Z', '');
+        date.innerHTML = `Photo taken: ${photoTakenDate}`;
+
+        const li = document.createElement('li');
+
+        li.appendChild(img);
+        li.appendChild(likes);
+        li.appendChild(dislikes);
+        li.appendChild(description);
+        li.appendChild(owner);
+        li.appendChild(coords);
+        li.appendChild(date);
+
+        // Used to check if currently logged in user owner of the pic (or admin)
+        const checkOwnerShip = async () => {
+          const fetchOptions = {
+            method: 'GET',
+            headers: {
+              'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+              'Content-Type': 'application/json',
+            },
+          };
+          const response = await fetch(url + '/pic/picuserid/' + pic.pic_id,
+              fetchOptions);
+          //console.log('owner status:', json);
+          return await response.json();
+        };
+
+        // Check if the logged user owns the photo, if so make button to be allowed to delete the photo
+        const checkOwner = await checkOwnerShip().then((result) => {
+          if (result.result === true) {
+            const deletePicButton = document.createElement('p');
+            deletePicButton.innerHTML = `<svg style="width: 20px; height: 20px" aria-hidden="true" focusable="false" data-prefix="fad" data-icon="trash" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="svg-inline--fa fa-trash fa-w-14 fa-3x"><g class="fa-group"><path fill="currentColor" d="M53.2 467L32 96h384l-21.2 371a48 48 0 0 1-47.9 45H101.1a48 48 0 0 1-47.9-45z" class="fa-secondary"></path><path fill="currentColor" d="M0 80V48a16 16 0 0 1 16-16h120l9.4-18.7A23.72 23.72 0 0 1 166.8 0h114.3a24 24 0 0 1 21.5 13.3L312 32h120a16 16 0 0 1 16 16v32a16 16 0 0 1-16 16H16A16 16 0 0 1 0 80z" class="fa-primary"></path></g></svg>`;
+            deletePicButton.addEventListener('click', async (evt) => {
+              evt.preventDefault();
+              console.log(`Delete pressed at ${pic.pic_id}`);
+              try {
+                const options = {
+                  method: 'DELETE',
+                  headers: {
+                    'Authorization': 'Bearer ' +
+                        sessionStorage.getItem('token'),
+                  },
+                };
+                console.log(options);
+                const response = await fetch(
+                    url + '/pic/delete/' + pic.pic_id, options);
+                const json = await response.json();
+                console.log('Delete response: ', json);
+
+              } catch (e) {
+                console.log(e.message);
+              }
+              // Refresh after deleting something.
+              await getPicsByOwner();
+            });
+            li.appendChild(deletePicButton);
+          }
+        });
+        await checkOwner;
+
+        picsList.appendChild(li);
+
+      } else {
+        const video = document.createElement('video');
+
+        video.src = url + '/Uploads/' + pic.filename;
+        video.width = 500;
+        video.height = 300;
+        video.controls = true;
+
+        const description = document.createElement('p');
+        description.innerHTML = pic.description;
+
+        const owner = document.createElement('p');
+        const postDate = pic.post_date.replace('T', ' ').replace('Z', '');
+        owner.innerHTML = `Posted by ${pic.name} ${pic.lastname} on ${postDate}`;
+
+        const li = document.createElement('li');
+
+        li.appendChild(video);
+        li.appendChild(description);
+        li.appendChild(owner);
+
+        picsList.appendChild(li);
+      }
     }
-
   } catch (e) {
     console.log(e.message);
   }
@@ -462,9 +614,9 @@ const createVideoCards = async (videos) => {
 
       const video = document.createElement('video');
 
-      video.src = url + '/Videos/' + vid.filename;
+      video.src = url + '/Uploads/' + vid.filename;
       video.width = 500;
-      video.height = 500;
+      video.height = 300;
       video.controls = true;
 
       const description = document.createElement('p');
@@ -497,7 +649,7 @@ const getAllPicks = async () => {
         'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
       },
     };
-    const response = await fetch(url + '/pic', options);
+    const response = await fetch(url + '/pic/pics', options);
     const pics = await response.json();
     console.log(pics);
     await createPicCards(pics);
@@ -546,7 +698,7 @@ const getAllVideos = async () => {
         'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
       },
     };
-    const response = await fetch(url + '/video', options);
+    const response = await fetch(url + '/pic/videos', options);
     const videos = await response.json();
     console.log(videos);
     await createVideoCards(videos);
@@ -820,7 +972,7 @@ but6.addEventListener('click', async (evt) => {
         'Content-Type': 'application/json',
       },
     };
-    const response = await fetch(url + '/user/check/loggeduser', fetchOptions);
+    const response = await fetch(url + '/user/check/userlogged', fetchOptions);
     const json = await response.json();
     console.log('getLogin response', json);
   } catch (e) {

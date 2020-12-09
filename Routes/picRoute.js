@@ -5,6 +5,9 @@ const picController = require('../Controllers/picController');
 const {body} = require('express-validator');
 const router = express.Router();
 const multer = require('multer');
+const fs = require('fs');
+const english = require('naughty-words/en.json')
+
 
 //Prevent multer for saving wrong file types
 const fileFilter = (req, file, cb) => {
@@ -16,9 +19,19 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-const upload = multer({dest: 'Uploads/', fileFilter});
+const fileFilter2 = (req, file, cb) => {
+  console.log(`filefilter2: ${file.mimetype}`);
+  if (file.mimetype.includes('image') || file.mimetype.includes('video')) {
+    return cb(null, true);
+  } else {
+    return cb(null, false, new Error('not an image or video'));
+  }
+};
+
+const upload = multer({dest: 'Uploads/', fileFilter2});
 
 const injectFile = (req, res, next) => {
+  console.log('injectFile req.file: ', req.file);
   if (req.file) {
     req.body.type = req.file.mimetype;
   }
@@ -26,7 +39,9 @@ const injectFile = (req, res, next) => {
   next();
 };
 
-router.get('/', picController.pic_list_get);
+router.get('/pics', picController.pic_list_get);
+
+router.get('/videos', picController.video_list_get);
 
 router.get('/mostlikes', picController.pic_list_get_by_most_likes);
 
@@ -43,9 +58,10 @@ router.route('/')
         picController.make_thumbnail,
         injectFile,
         [
-          body('description', 'must be at least a character long').
-              isLength({min: 1}),
-          body('type', 'not image').contains('image'),
+          body('description', 'must be at least three characters long and not contain bad words!').
+              isLength({min: 3}).not().isIn(english),
+          //body('type', 'not image or video').contains('image'),
+          body('type', 'not image or video').matches('(?=video|image)'),
         ],
         picController.pic_create);
 
