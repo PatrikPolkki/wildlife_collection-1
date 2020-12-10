@@ -33,13 +33,13 @@ body {
     border-bottom-right-radius: 10px;
 }
 .nav .links a{
-    font-family: "JetBrains Mono";
+    font-family: 'Noto Sans JP', sans-serif;
     cursor: pointer;
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 500;
     color: black;
 }
-.nav .links a:first-child {
+.nav .links a:first-child{
     margin-right: 30px;
 }
 
@@ -47,13 +47,13 @@ body {
     display: none;
 }
 .nav .otherLinks a{
-    font-family: "JetBrains Mono";
+    font-family: 'Noto Sans JP', sans-serif;
     cursor: pointer;
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 500;
     color: black;
 }
-.nav .otherLinks a:first-child {
+.logOut, .frontPage {
     margin-right: 30px;
 }
 
@@ -90,6 +90,7 @@ body {
     justify-content: center;
 }
 .small-card {
+    cursor: pointer;
     width: 360px;
     height: 400px;
     padding: 24px;
@@ -192,9 +193,22 @@ body {
         margin: 10px 0;
         width: 100%;
     }
+    .getPics p {
+        font-size: 4vw !important;
+    }
+}
+@media only screen and (max-width: 700px) {
+    .nav .otherLinks a {
+        font-size: 2vw;
+    }
+    .nav .links a {
+        font-size: 2vw;
+    }
+}
+@media only screen and (max-width: 600px) {
     .nav {
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: space-around;
         padding: 20px 20px 15px;
         height: auto;
         overflow-y: hidden;
@@ -205,11 +219,11 @@ body {
     }
     .nav .links a {
         margin-right: 12px;
-        font-size: 14px;
+        font-size: 12px;
     }
     .nav .otherLinks a {
-        margin-right: 12px;
-        font-size: 14px;
+        margin-right: 25px;
+        font-size: 12px;
     }
     .search {
         padding: 120px 20% 0 !important;

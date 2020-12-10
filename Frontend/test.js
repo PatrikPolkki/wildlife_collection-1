@@ -6,7 +6,7 @@ const map = new mapboxgl.Map({
   container: 'map', // container id
   style: 'mapbox://styles/mapbox/outdoors-v11',
   center: [24.92398406198174, 60.18035205606998], // starting position
-  zoom: 7, // starting zoom
+  zoom: 7,  // starting zoom
 });
 let marker;
 
@@ -89,6 +89,7 @@ const createPicCards = async (pics) => {
 
         const smallCard = document.createElement('div');
         smallCard.className = 'small-card';
+
 
         const img = document.createElement('img');
         img.src = url + '/Thumbnails/' + pic.filename;
@@ -287,7 +288,7 @@ const createPicCards = async (pics) => {
                     interactionModalDislikeButton.remove();
 
                     //update smallcard model
-                    likesSmallCard.innerHTML = `Likes ${updatedLikes[0].likes} Dislikes ${updatedLikes[0].dislikes}`;
+                    likesSmallCard.innerHTML = `Likes ${updatedLikes[0].likes} Comments ${comments.length}`;
 
                   } catch (e) {
                     console.log(e.message);
@@ -334,7 +335,7 @@ const createPicCards = async (pics) => {
                     interactionModalLikeButton.remove();
 
                     //update smallcard model
-                    likesSmallCard.innerHTML = `Likes ${updatedLikes[0].likes} Dislikes ${updatedLikes[0].dislikes}`;
+                    likesSmallCard.innerHTML = `Likes ${updatedLikes[0].likes} Comments ${comments.length}`;
 
                   } catch (e) {
                     console.log(e.message);
@@ -511,10 +512,11 @@ const createPicCards = async (pics) => {
 
         const likesSmallCard = document.createElement('p');
 
+        const commentsNumber = await getComments(pic.pic_id);
         if (updatedLikes[0] === undefined) {
-          likesSmallCard.innerHTML = `Likes 0 Dislikes 0`;
+          likesSmallCard.innerHTML = `Likes 0 Comments 0`;
         } else {
-          likesSmallCard.innerHTML = `Likes ${updatedLikes[0].likes} Dislikes ${updatedLikes[0].dislikes}`;
+          likesSmallCard.innerHTML = `Likes ${updatedLikes[0].likes} Comments ${commentsNumber.length}`;
         }
 
         smallCard.appendChild(text);
@@ -736,7 +738,7 @@ const createPicCards = async (pics) => {
                     interactionModalDislikeButton.remove();
 
                     //update smallcard model
-                    likesSmallCard.innerHTML = `Likes ${updatedLikes[0].likes} Dislikes ${updatedLikes[0].dislikes}`;
+                    likesSmallCard.innerHTML = `Likes ${updatedLikes[0].likes} Comments ${comments.length}`;
 
                   } catch (e) {
                     console.log(e.message);
@@ -783,7 +785,7 @@ const createPicCards = async (pics) => {
                     interactionModalLikeButton.remove();
 
                     //update smallcard model
-                    likesSmallCard.innerHTML = `Likes ${updatedLikes[0].likes} Dislikes ${updatedLikes[0].dislikes}`;
+                    likesSmallCard.innerHTML = `Likes ${updatedLikes[0].likes} Comments ${comments.length}`;
 
                   } catch (e) {
                     console.log(e.message);
@@ -960,10 +962,11 @@ const createPicCards = async (pics) => {
 
         const likesSmallCard = document.createElement('p');
 
+        const commentNumber = await getComments(pic.pic_id);
         if (updatedLikes[0] === undefined) {
-          likesSmallCard.innerHTML = `Likes 0 Dislikes 0`;
+          likesSmallCard.innerHTML = `Likes 0 Comments 0`;
         } else {
-          likesSmallCard.innerHTML = `Likes ${updatedLikes[0].likes} Dislikes ${updatedLikes[0].dislikes}`;
+          likesSmallCard.innerHTML = `Likes ${updatedLikes[0].likes} Comments ${commentNumber.length}`;
         }
 
         smallCard.appendChild(text);
@@ -1110,6 +1113,7 @@ const createPicCardsNoToken = async (pics) => {
           button.innerHTML = 'POST';
           button.type = 'submit';
           button.setAttribute('disabled', true);
+          button.style.cursor = 'initial';
 
           modalForm.appendChild(button);
 
@@ -1132,10 +1136,12 @@ const createPicCardsNoToken = async (pics) => {
         owner.innerHTML = `${pic.name} ${pic.lastname}`;
 
         const likes = document.createElement('p');
+
+        const commentNumber = await getCommentsNoToken(pic.pic_id);
         if (updatedLikes[0] === undefined) {
-          likes.innerHTML = `Likes 0 Dislikes 0`;
+          likes.innerHTML = `Likes 0 Comments 0`;
         } else {
-          likes.innerHTML = `Likes ${updatedLikes[0].likes} Dislikes ${updatedLikes[0].dislikes}`;
+          likes.innerHTML = `Likes ${updatedLikes[0].likes} Comments ${commentNumber.length}`;
         }
 
         smallCard.appendChild(text);
@@ -1290,10 +1296,11 @@ const createPicCardsNoToken = async (pics) => {
         owner.innerHTML = `${pic.name} ${pic.lastname}`;
 
         const likes = document.createElement('p');
+        const commentNumber = await getCommentsNoToken(pic.pic_id);
         if (updatedLikes[0] === undefined) {
-          likes.innerHTML = `Likes 0 Dislikes 0`;
+          likes.innerHTML = `Likes 0 Comments 0`;
         } else {
-          likes.innerHTML = `Likes ${updatedLikes[0].likes} Dislikes ${updatedLikes[0].dislikes}`;
+          likes.innerHTML = `Likes ${updatedLikes[0].likes} Comments ${commentNumber.length}`;
         }
 
         smallCard.appendChild(text);
@@ -1320,6 +1327,9 @@ const getAllPicksNoToken = async () => {
     console.log(pics);
 
     search.style.display = 'flex';
+    latest.style.borderBottom = 'solid 2px grey';
+    mostLiked.style.borderBottom = 'solid 1px darkgray';
+    header.innerHTML = 'LATEST';
     showNotLoggedNav();
     await createPicCardsNoToken(pics);
   } catch (e) {
@@ -1337,6 +1347,9 @@ const getAllPicksByMostLikesNoToken = async () => {
     const pics = await response.json();
     console.log(pics);
     search.style.display = 'flex';
+    latest.style.borderBottom = 'solid 1px darkgray';
+    mostLiked.style.borderBottom = 'solid 2px grey';
+    header.innerHTML = 'MOST LIKED';
     await createPicCardsNoToken(pics);
   } catch (e) {
     console.log(e.message);
@@ -1374,6 +1387,11 @@ const getAllPicks = async () => {
     header.style.paddingTop = '90px';
     document.querySelector('.buttonHolder').style.display = 'none';
     document.querySelector('.jotain').style.display = 'none';
+    document.querySelector('.profile').style.color = 'black';
+    document.querySelector('.frontPage').style.color = '#43A047';
+    latest.style.borderBottom = 'solid 2px grey';
+    mostLiked.style.borderBottom = 'solid 1px darkgray';
+    header.innerHTML = 'LATEST';
     await showLoggedNav();
     await createPicCards(pics);
   } catch (e) {
@@ -1405,6 +1423,8 @@ const getPicsByOwner = async (picsNumber) => {
 
     document.querySelector('.buttonHolder').style.display = 'flex';
     document.querySelector('.jotain').style.display = 'flex';
+    document.querySelector('.frontPage').style.color = 'black';
+    document.querySelector('.profile').style.color = '#43A047';
     if (pics.length === 0) {
       console.log('pics is empty');
       const noImages = document.createElement('div');
@@ -1431,6 +1451,9 @@ const getAllPicksByMostLikes = async () => {
     const pics = await response.json();
     console.log(pics);
     search.style.display = 'flex';
+    latest.style.borderBottom = 'solid 1px darkgray';
+    mostLiked.style.borderBottom = 'solid 2px grey';
+    header.innerHTML = 'MOST LIKED';
     await createPicCards(pics);
   } catch (e) {
     console.log(e.message);
@@ -1552,6 +1575,7 @@ searchForm.addEventListener('submit', async (evt) => {
         fetchOptions);
     const json = await response.json();
     console.log('add response', json);
+    header.innerHTML = document.querySelector('#search-input').value;
     await createPicCards(json);
   } else {
     const response = await fetch(
@@ -1560,6 +1584,7 @@ searchForm.addEventListener('submit', async (evt) => {
         fetchOptions);
     const json = await response.json();
     console.log('add response', json);
+    header.innerHTML = document.querySelector('#search-input').value;
     await createPicCardsNoToken(json);
   }
 });
@@ -1570,28 +1595,18 @@ const mostLiked = document.querySelector('.mostlikedPics');
 latest.addEventListener('click', (evt) => {
   if (sessionStorage.getItem('token')) {
     getAllPicks();
-    latest.style.borderBottom = 'solid 2px grey';
-    mostLiked.style.borderBottom = 'solid 1px darkgray';
-    header.innerHTML = 'LATEST';
   } else {
     getAllPicksNoToken();
-    latest.style.borderBottom = 'solid 2px grey';
-    mostLiked.style.borderBottom = 'solid 1px darkgray';
-    header.innerHTML = 'LATEST';
   }
 });
 
 mostLiked.addEventListener('click', (evt) => {
   if (sessionStorage.getItem('token')) {
     getAllPicksByMostLikes();
-    latest.style.borderBottom = 'solid 1px darkgray';
-    mostLiked.style.borderBottom = 'solid 2px grey';
-    header.innerHTML = 'MOST LIKED';
+
   } else {
     getAllPicksByMostLikesNoToken();
-    latest.style.borderBottom = 'solid 1px darkgray';
-    mostLiked.style.borderBottom = 'solid 2px grey';
-    header.innerHTML = 'MOST LIKED';
+
   }
 });
 
@@ -1607,11 +1622,25 @@ profile.addEventListener('click', async (evt) => {
   }
 });
 
+const frontPage = document.querySelector('.frontPage');
+frontPage.addEventListener('click', async (evt) => {
+  evt.preventDefault();
+  try {
+    await getAllPicks();
+  } catch (e) {
+    console.log(e.message);
+  }
+});
+
 const logo = document.querySelector('.logo');
 logo.addEventListener('click', async (evt) => {
   evt.preventDefault();
 
-  await getAllPicks();
+  if (isToken) {
+    await getAllPicks();
+  } else {
+    await getAllPicksNoToken();
+  }
 });
 
 const addImage = document.querySelector('.addImage');
@@ -1781,6 +1810,7 @@ const showLoggedNav = async () => {
     istokenLinks.style.display = 'flex';
 
     document.querySelector('.logOut').innerHTML = 'Log Out';
+    document.querySelector('.frontPage').innerHTML = 'Front Page';
     document.querySelector(
         '.profile').innerHTML = `${username.name} ${username.lastname}`;
   } catch (e) {

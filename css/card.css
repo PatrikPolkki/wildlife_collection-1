@@ -49,6 +49,7 @@
 }
 
 .map {
+    cursor: pointer;
     position: absolute;
     top: 8px;
     right: 8px;
@@ -256,7 +257,6 @@
     border-left: none;
     cursor: pointer;
 }
-
 #commentForm button:hover {
     background: #e0e0e0;
 }
@@ -267,6 +267,7 @@
     display: table;
 }
 .exit {
+    cursor: pointer;
     position: absolute;
     top: 0;
     right: 0;
@@ -306,25 +307,6 @@
     transform: scale(1.1);
 }
 
-.loginExit {
-    position: absolute;
-    top: 0;
-    right: 0;
-    /* background: #bcb3b3; */
-    width: fit-content;
-    height: fit-content;
-    /* border-radius: 50%; */
-    padding: 0 5px;
-    text-align: center;
-    font-size: 1.7rem;
-    text-decoration: none;
-    color: #43A047;;
-    transition: .5s;
-}
-
-.loginExit:hover {
-    transform: scale(1.1);
-}
 
 @media only screen and (max-width: 550px) {
     .card-container {
@@ -341,5 +323,10 @@
     .info {
         height: 50%;
         width: 100%;
+    }
+}
+@media only screen and (max-width: 600px){
+    .card {
+        padding-top: 35px;
     }
 }
