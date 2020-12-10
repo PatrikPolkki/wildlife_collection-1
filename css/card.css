@@ -221,7 +221,10 @@
     line-height: 1;
     cursor: pointer;
     font-family: 'JetBrains Mono';
-
+    transition: .5s;
+}
+.like:hover {
+    transform: scale(1.1);
 }
 .example {
     display: flex;
@@ -290,7 +293,7 @@
     transition: .5s;
 }
 .exit:hover {
-    transform: scale(1.1);
+    transform: scale(1.2);
 }
 
 .deleteButton {
@@ -311,7 +314,7 @@
     transition: .5s;
 }
 .delete:hover {
-    transform: scale(1.1);
+    transform: scale(1.2);
 }
 
 
