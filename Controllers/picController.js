@@ -6,7 +6,6 @@ const ImageMeta = require('../Utils/imageMeta');
 const {makeThumbnail} = require('../Utils/resize');
 const fs = require('fs');
 
-
 // Controller for getting all media
 const media_list_get = async (req, res) => {
   const pics = await picModel.getAllMedia();
@@ -184,11 +183,19 @@ const media_delete = async (req, res) => {
   console.log('mediaOwner info, is there filename?: ', mediaOwner);
 
   if (mediaOwner.user_id == req.user.user_id || req.user.admin == 1) {
+
     // Delete files from the machine too
-    fs.unlink(`Thumbnails/${mediaOwner.filename}`, err => {
-      if (err) throw err;
-      console.log(`Removing Thumbnails/${mediaOwner.filename}`);
-    });
+    if (mediaOwner.mediatype === 'image') {
+      fs.unlink(`Thumbnails/${mediaOwner.filename}`, err => {
+        if (err) throw err;
+        console.log(`Removing Thumbnails/${mediaOwner.filename}`);
+      });
+    } else {
+      fs.unlink(`Uploads/${mediaOwner.filename}`, err => {
+        if (err) throw err;
+        console.log(`Removing Uploads/${mediaOwner.filename}`);
+      });
+    }
     const picDeleted = await picModel.deleteMedia(req.params.pic_id);
     await res.json(picDeleted);
   }
@@ -205,5 +212,5 @@ module.exports = {
   media_delete,
   video_list_get,
   chosen_media_get_by_owner,
-  media_list_get
+  media_list_get,
 };
