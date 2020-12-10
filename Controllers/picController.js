@@ -20,7 +20,7 @@ const video_list_get = async (req, res) => {
 
 // Controller for getting media by most likes
 const media_list_get_by_most_likes = async (req, res) => {
-  const pics = await picModel.getMediaByMostLikes;
+  const pics = await picModel.getMediaByMostLikes();
   await res.json(pics);
 };
 

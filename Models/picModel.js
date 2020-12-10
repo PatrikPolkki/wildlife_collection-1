@@ -36,14 +36,12 @@ const getAllVideos = async () => {
 const getMediaByMostLikes = async () => {
   try {
     const [rows] = await promisePool.execute(
-        'SELECT SUM(likes) AS likes, SUM(dislikes) AS dislikes, l.pic_id, p.description, p.filename, p.coords, p.date, p.post_date, p.mediatype, u.name, u.lastname, p.mediatype\n' +
-        ' FROM wop_testlikes l\n' +
-        '  INNER JOIN wop_testpic p\n' +
-        '   ON l.pic_id = p.pic_id\n' +
-        '    INNER JOIN wop_testuser u\n' +
-        '     ON p.user_id = u.user_id\n' +
-        '       GROUP BY l.pic_id\n' +
-        '        ORDER BY likes DESC;');
+        'SELECT IFNULL(SUM(wop_testlikes.likes), 0) likes, wop_testpic.pic_id, wop_testpic.description, wop_testpic.filename, wop_testpic.coords, wop_testpic.date, wop_testpic.post_date, wop_testuser.name, wop_testuser.lastname, wop_testpic.mediatype\n' +
+        'FROM wop_testpic \n' +
+        'LEFT JOIN wop_testlikes ON wop_testpic.pic_id = wop_testlikes.pic_id \n' +
+        'LEFT JOIN wop_testuser ON wop_testpic.user_id = wop_testuser.user_id\n' +
+        'group by wop_testpic.pic_id\n' +
+        'ORDER BY LIKES DESC');
     return rows;
   } catch (e) {
     console.error('picModel getMediaByMostLikes');
