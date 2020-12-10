@@ -5,21 +5,10 @@ const picController = require('../Controllers/picController');
 const {body} = require('express-validator');
 const router = express.Router();
 const multer = require('multer');
-const fs = require('fs');
 const english = require('naughty-words/en.json')
 
-
-//Prevent multer for saving wrong file types
+// Prevent multer for saving wrong file types
 const fileFilter = (req, file, cb) => {
-  console.log(`fileFilter: ${file.mimetype}`);
-  if (!file.mimetype.includes('image')) {
-    return cb(null, false, new Error('not an image'));
-  } else {
-    cb(null, true);
-  }
-};
-
-const fileFilter2 = (req, file, cb) => {
   console.log(`filefilter2: ${file.mimetype}`);
   if (file.mimetype.includes('image') || file.mimetype.includes('video')) {
     return cb(null, true);
@@ -28,7 +17,8 @@ const fileFilter2 = (req, file, cb) => {
   }
 };
 
-const upload = multer({dest: 'Uploads/', fileFilter2});
+// Upload image
+const upload = multer({dest: 'Uploads/', fileFilter});
 
 const injectFile = (req, res, next) => {
   console.log('injectFile req.file: ', req.file);
@@ -39,18 +29,32 @@ const injectFile = (req, res, next) => {
   next();
 };
 
+// Get all images
 router.get('/pics', picController.pic_list_get);
 
+// Get all videos
 router.get('/videos', picController.video_list_get);
 
-router.get('/mostlikes', picController.pic_list_get_by_most_likes);
+// Get all media of user
+router.route('/userpics').get(picController.media_get_by_owner);
 
-router.get('/search/:input', picController.pic_list_get_by_search);
+// Get specified media of user
+router.route('/specifiedusermedia/video').get(picController.chosen_media_get_by_owner)
+router.route('/specifiedusermedia/image').get(picController.chosen_media_get_by_owner)
 
-router.get('/picuserid/:pic_id', picController.get_pic_user_id);
+// Order all media by most likes
+router.get('/mostlikes', picController.media_list_get_by_most_likes);
 
-router.delete('/delete/:pic_id', picController.pic_delete);
+// Order all media by search input
+router.get('/search/:input', picController.media_list_get_by_search);
 
+// Get logged in users media by id
+router.get('/picuserid/:pic_id', picController.get_media_user_id);
+
+// Delete media of user
+router.delete('/delete/:pic_id', picController.media_delete);
+
+// Upload media
 router.route('/')
     //.get(picController.pic_list_get)
     .post(
@@ -63,8 +67,8 @@ router.route('/')
           //body('type', 'not image or video').contains('image'),
           body('type', 'not image or video').matches('(?=video|image)'),
         ],
-        picController.pic_create);
+        picController.media_create);
 
-router.route('/userpics').get(picController.pic_get_by_owner);
+
 
 module.exports = router;

@@ -2,6 +2,7 @@
 const pool = require('../Database/db');
 const promisePool = pool.promise();
 
+// Get all users from database
 const getAllUsers = async () => {
   try {
     const [rows] = await promisePool.execute('SELECT * FROM wop_testuser');
@@ -11,6 +12,7 @@ const getAllUsers = async () => {
   }
 };
 
+// Get user by specific id
 const getUser = async (id) => {
   try {
     const [rows] = await promisePool.execute(
@@ -21,6 +23,7 @@ const getUser = async (id) => {
   }
 };
 
+// Add a user
 const insertUser = async (req) => {
   console.log('userModel req.body: ', req.body);
   try {
@@ -53,9 +56,23 @@ const getUserLogin = async (params) => {
   }
 };
 
+// For checking email availability in database
+const checkEmailAvailability = async (req, res) => {
+  try {
+    console.log('userModel checkEmailAvalability');
+    const [rows] = await promisePool.execute('SELECT *\n' +
+        'FROM wop_testuser\n' +
+        'WHERE wop_testuser.email = ?;', [req.body.email])
+    return rows[0]
+  } catch (e) {
+    console.error(e.message);
+  }
+};
+
 module.exports = {
   getAllUsers,
   getUser,
   getUserLogin,
   insertUser,
+  checkEmailAvailability
 };

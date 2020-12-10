@@ -5,8 +5,8 @@ const {validationResult} = require('express-validator');
 const userModel = require('../Models/userModel');
 const bcrypt = require('bcryptjs');
 
+// Controller for handling login
 const login = (req, res) => {
-  // TODO: add passport authenticate
   console.log(`authController login req.body: `, req.body);
   passport.authenticate('local', {session: false}, (err, user, info) => {
     console.log('authController authenticate', user);
@@ -27,30 +27,46 @@ const login = (req, res) => {
   })(req, res);
 };
 
+// Controller for creating user
 const user_create_post = async (req, res, next) => {
   // Extract the validation errors from a request.
-  const errors = validationResult(req); // TODO require validationResult, see userController
+  const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    console.log('user create error', errors);
-    res.send(errors.array());
-  } else {
-    // TODO: bcrypt password
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(req.body.password, salt);
-    req.body.password = hash;
-    req.body.admin = 0;
+  try {
+    // Check for email availability, if email is already in database don't allow creation
+    const status = await userModel.checkEmailAvailability(req);
 
-    console.log('authController: salt and hash craeted, pw hashed');
+    const available = status === undefined ? true : false;
 
-    if (await userModel.insertUser(req)) {
-      next();
+    if (available) {
+      if (!errors.isEmpty()) {
+        console.log('user create error', errors);
+        res.send(errors.array());
+      } else {
+        //bcrypt password
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(req.body.password, salt);
+        req.body.password = hash;
+        // Admin always defaults to 0
+        req.body.admin = 0;
+
+        console.log('authController: salt and hash craeted, pw hashed');
+
+        if (await userModel.insertUser(req)) {
+          next();
+        } else {
+          res.status(400).json({error: 'register error'});
+        }
+      }
     } else {
-      res.status(400).json({error: 'register error'});
+      res.json({Message: 'Email is already taken'});
     }
+  } catch (e) {
+    console.error(e.message);
   }
 };
 
+// Controller for handling logout
 const logout = (req, res) => {
   req.logout();
   res.json({message: 'logout'});

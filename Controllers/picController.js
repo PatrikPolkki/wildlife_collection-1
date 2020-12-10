@@ -6,31 +6,36 @@ const ImageMeta = require('../Utils/imageMeta');
 const {makeThumbnail} = require('../Utils/resize');
 const fs = require('fs');
 
+// Controller for getting all images
 const pic_list_get = async (req, res) => {
   const pics = await picModel.getAllPics();
   await res.json(pics);
 };
 
+// Controller for getting all videos
 const video_list_get = async (req, res) => {
   const pics = await picModel.getAllVideos();
   await res.json(pics);
 };
 
-const pic_list_get_by_most_likes = async (req, res) => {
-  const pics = await picModel.getPicsByMostLikes();
+// Controller for getting media by most likes
+const media_list_get_by_most_likes = async (req, res) => {
+  const pics = await picModel.getMediaByMostLikes;
   await res.json(pics);
 };
 
-const pic_list_get_by_search = async (req, res) => {
+// Controller for getting media by search input
+const media_list_get_by_search = async (req, res) => {
   const input = '%' + req.params.input + '%';
   console.log(input);
-  const pics = await picModel.getPicsBySearch(input);
+  const pics = await picModel.getMediaBySearch(input);
   await res.json(pics);
 };
 
-const pic_create = async (req, res) => {
+// Controller for Creating media
+const media_create = async (req, res) => {
   //here we will create a pic with data coming from req
-  //console.log('picContoller pic_create', req.body, req.file, req.params.id);
+  //console.log('picContoller media_create', req.body, req.file, req.params.id);
   console.log('req.file: ', req.file);
 
   // Check if validation was passed without errors.
@@ -105,14 +110,14 @@ const pic_create = async (req, res) => {
   }
 
   // Insert pic
-  const id = await picModel.insertPic(req);
-  //Query for pic..
-  const pic = await picModel.getPicById(id);
+  const id = await picModel.insertMedia(req);
+  //Query for pic which was insterted
+  const pic = await picModel.getMediaById(id);
   //...then send it
   res.send(pic);
 };
 
-//Used to create thumbnails with sharp --> resize.js
+// Controller to create thumbnails with sharp --> resize.js
 const make_thumbnail = async (req, res, next) => {
   console.log('make_thumbnail req.file.mimetype: ', req.file.mimetype);
   //If the posted media is image and not video, create thumbnail and resize
@@ -134,47 +139,63 @@ const make_thumbnail = async (req, res, next) => {
   }
 };
 
-const pic_get_by_owner = async (req, res) => {
+// Controller for all content posted by user
+const media_get_by_owner = async (req, res) => {
   console.log(`picController: http get pic with path param`, req.params);  //params -> id
-  const pic = await picModel.getPicsByOwner(req.user.user_id);
-  await res.json(pic);
+  const media = await picModel.getMediaByOwner(req.user.user_id);
+  await res.json(media);
+};
+
+// Controller for getting specified type of media
+const chosen_media_get_by_owner = async (req, res) => {
+
+  req.body.user_id = req.user.user_id;
+
+  if (req.path.includes('image')) {
+    req.body.mediatype = 'image';
+  } else {
+    req.body.mediatype = 'video';
+  }
+  const media = await picModel.getChosenMediaByOwner(req);
+  await res.json(media);
 };
 
 // Send true if user is the owner of picture else send false
-const get_pic_user_id = async (req, res) => {
-  const picOwner = await picModel.getPicUserId(req.params.pic_id);
-  if (picOwner.user_id == req.user.user_id || req.user.admin == 1) {
+const get_media_user_id = async (req, res) => {
+  const mediaOwner = await picModel.getMediaUserId(req.params.pic_id);
+  if (mediaOwner.user_id == req.user.user_id || req.user.admin == 1) {
     await res.status(200).send({'result': true});
   } else {
     await res.status(200).send({'result': false});
   }
 };
 
-const pic_delete = async (req, res) => {
+// Controller for deleting user media
+const media_delete = async (req, res) => {
   // Check user_id of the pic (=owner)
-  const picOwner = await picModel.getPicUserId(req.params.pic_id);
-  console.log('picOwner info, is there filename?: ', picOwner);
+  const mediaOwner = await picModel.getMediaUserId(req.params.pic_id);
+  console.log('mediaOwner info, is there filename?: ', mediaOwner);
 
-  // Delete files from the machine too
-  fs.unlink(`Thumbnails/${picOwner.filename}`, err => {
-    if (err) throw err;
-    console.log(`Removing Thumbnails/${picOwner.filename}`);
-  });
-
-  if (picOwner.user_id == req.user.user_id || req.user.admin == 1) {
-    const picDeleted = await picModel.deletePic(req.params.pic_id);
+  if (mediaOwner.user_id == req.user.user_id || req.user.admin == 1) {
+    // Delete files from the machine too
+    fs.unlink(`Thumbnails/${mediaOwner.filename}`, err => {
+      if (err) throw err;
+      console.log(`Removing Thumbnails/${mediaOwner.filename}`);
+    });
+    const picDeleted = await picModel.deleteMedia(req.params.pic_id);
     await res.json(picDeleted);
   }
 };
 
 module.exports = {
   pic_list_get,
-  pic_create,
+  media_create,
   make_thumbnail,
-  pic_get_by_owner,
-  pic_list_get_by_most_likes,
-  pic_list_get_by_search,
-  get_pic_user_id,
-  pic_delete,
+  media_get_by_owner,
+  media_list_get_by_most_likes,
+  media_list_get_by_search,
+  get_media_user_id,
+  media_delete,
   video_list_get,
+  chosen_media_get_by_owner
 };

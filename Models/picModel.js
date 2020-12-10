@@ -28,12 +28,12 @@ const getAllVideos = async () => {
         '    ORDER BY wop_testpic.post_date DESC');
     return rows;
   } catch (e) {
-    console.error('picModel getAllPics: ', e.message);
+    console.error('picModel getAllVideos: ', e.message);
   }
 };
 
-// Returns pics by their most liked
-const getPicsByMostLikes = async () => {
+// Returns all media by most liked
+const getMediaByMostLikes = async () => {
   try {
     const [rows] = await promisePool.execute(
         'SELECT SUM(likes) AS likes, SUM(dislikes) AS dislikes, l.pic_id, p.description, p.filename, p.coords, p.date, p.post_date, p.mediatype, u.name, u.lastname, p.mediatype\n' +
@@ -46,25 +46,27 @@ const getPicsByMostLikes = async () => {
         '        ORDER BY likes DESC;');
     return rows;
   } catch (e) {
-    console.error('picModel getPicsByMostLikes');
+    console.error('picModel getMediaByMostLikes');
   }
 };
 
-const getPicById = async (id) => {
+// Returns single media item of a user
+const getMediaById = async (id) => {
   try {
-    console.log('picModel getPicById', id);
+    console.log('picModel getMediaById', id);
     //const [rows] = await promisePool.execute(`SELECT * FROM wop_cat WHERE cat_id = ${id}`);
     const [rows] = await promisePool.execute(
         'SELECT * FROM wop_testpic WHERE pic_id = ?', [id]);
     return rows[0];
   } catch (e) {
-    console.error('picModel getPicById:', e.message);
+    console.error('picModel getMediaById:', e.message);
   }
 };
 
-const getPicsByOwner = async (user_id) => {
+// Returns all of users media
+const getMediaByOwner = async (user_id) => {
   try {
-    console.log('picModel getPicsByOwner id:', user_id);
+    console.log('picModel getMediaByOwner id:', user_id);
     if (user_id !== null) {
       const [rows] = await promisePool.execute(
           'SELECT DISTINCT wop_testuser.name, wop_testuser.lastname, wop_testpic.description, wop_testpic.coords, wop_testpic.date, wop_testpic.post_date, wop_testpic.filename, wop_testpic.pic_id, wop_testpic.mediatype \n' +
@@ -76,34 +78,53 @@ const getPicsByOwner = async (user_id) => {
       console.log('Not acceptable');
     }
   } catch (e) {
-    console.error('picModel getPic error:', e.message);
+    console.error('picModel getMediaByOwner error:', e.message);
   }
 };
 
-// Ordered by most liked
-const getPicsBySearch = async (input) => {
+// Returns all of users chosen media
+const getChosenMediaByOwner = async (req) => {
   try {
-    console.log('picModel getPicsBySearch: ', input);
+    console.log('picModel getChosenMediaByOwner req.body:', req.body);
+    if (req.body.user_id !== null) {
+      const [rows] = await promisePool.execute(
+          'SELECT DISTINCT wop_testuser.name, wop_testuser.lastname, wop_testpic.description, wop_testpic.coords, wop_testpic.date, wop_testpic.post_date, wop_testpic.filename, wop_testpic.pic_id, wop_testpic.mediatype\n' +
+          'FROM wop_testuser INNER JOIN wop_testpic ON wop_testuser.user_id = wop_testpic.user_id\n' +
+          'WHERE wop_testuser.user_id = ? AND\n' +
+          'wop_testpic.mediatype = ? \n' +
+          'ORDER BY wop_testpic.post_date DESC;', [req.body.user_id, req.body.mediatype]);
+      return rows;
+    } else {
+      console.log('Not acceptable');
+    }
+  } catch (e) {
+    console.error('picModel getChosenMediaByOwner error:', e.message);
+  }
+};
+
+
+// Search all database descriptions and order by most liked
+const getMediaBySearch = async (input) => {
+  try {
+    console.log('picModel getMediaBySearch: ', input);
     const [rows] = await promisePool.execute(
-        'SELECT SUM(likes) AS likes, SUM(dislikes) AS dislikes, l.pic_id, p.description, p.filename, p.coords, p.date, p.post_date, u.name, u.lastname, p.mediatype\n' +
-        ' FROM wop_testlikes l\n' +
-        '  INNER JOIN wop_testpic p\n' +
-        '   ON l.pic_id = p.pic_id\n' +
-        '    INNER JOIN wop_testuser u\n' +
-        '     ON p.user_id = u.user_id\n' +
-        '      WHERE p.description\n' +
-        '       LIKE ? \n' +
-        '        GROUP BY l.pic_id\n' +
-        '         ORDER BY likes DESC;', [input]);
+        'SELECT IFNULL(COUNT(wop_testlikes.likes), null) likes, wop_testpic.pic_id, wop_testpic.description, wop_testpic.filename, wop_testpic.coords, wop_testpic.date, wop_testpic.post_date, wop_testuser.name, wop_testuser.lastname, wop_testpic.mediatype\n' +
+        'FROM wop_testpic \n' +
+        'LEFT JOIN wop_testlikes ON wop_testpic.pic_id = wop_testlikes.pic_id \n' +
+        'LEFT JOIN wop_testuser ON wop_testpic.user_id = wop_testuser.user_id\n' +
+        'WHERE wop_testpic.description LIKE ? \n' +
+        'group by wop_testpic.pic_id\n' +
+        'ORDER BY LIKES DESC;', [input]);
     return rows;
   } catch (e) {
     console.error(e.message);
   }
 };
 
-const getPicUserId = async (pic_id) => {
+// Get user id of certain uploaded media
+const getMediaUserId = async (pic_id) => {
   try {
-    console.log('getPicUserId');
+    console.log('getMediaUserId');
     const [rows] = await promisePool.execute('SELECT *\n' +
         ' FROM wop_testpic\n' +
         '  WHERE wop_testpic.pic_id = ?;', [pic_id]);
@@ -113,7 +134,8 @@ const getPicUserId = async (pic_id) => {
   }
 };
 
-const insertPic = async (req) => {
+// Insert any media
+const insertMedia = async (req) => {
   console.log('req.body: ', req.body);
   console.log('req.file: ', req.file);
   try {
@@ -136,8 +158,9 @@ const insertPic = async (req) => {
   }
 };
 
-const deletePic = async (pic_id) => {
-  console.log('picModel deletePic pic_id: ', pic_id);
+// Delete any media
+const deleteMedia = async (pic_id) => {
+  console.log('picModel deleteMedia pic_id: ', pic_id);
   try {
     const [rows] = await promisePool.execute(
         'DELETE FROM wop_testpic WHERE pic_id = ?', [pic_id]);
@@ -154,13 +177,14 @@ const deletePic = async (pic_id) => {
 module.exports = {
   getAllPics,
   getAllVideos,
-  getPicById,
-  getPicsByOwner,
-  insertPic,
-  getPicsByMostLikes,
-  getPicsBySearch,
-  getPicUserId,
-  deletePic,
+  getMediaById,
+  getMediaByOwner,
+  insertMedia,
+  getMediaByMostLikes,
+  getMediaBySearch,
+  getMediaUserId,
+  deleteMedia,
+  getChosenMediaByOwner
 };
 
 
