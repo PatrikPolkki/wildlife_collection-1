@@ -29,6 +29,9 @@ const injectFile = (req, res, next) => {
   next();
 };
 
+// Get all media
+router.get('/media', picController.media_list_get);
+
 // Get all images
 router.get('/pics', picController.pic_list_get);
 

@@ -2,6 +2,20 @@
 const pool = require('../Database/db');
 const promisePool = pool.promise();
 
+// Get all media by their posting date
+const getAllMedia = async () => {
+  try {
+    const [rows] = await promisePool.execute(
+        'SELECT DISTINCT wop_testuser.name, wop_testuser.lastname, wop_testpic.description, wop_testpic.coords, wop_testpic.date, wop_testpic.post_date, wop_testpic.filename, wop_testpic.pic_id, wop_testpic.user_id, wop_testpic.mediatype\n' +
+        'FROM wop_testuser\n' +
+        'INNER JOIN wop_testpic ON wop_testuser.user_id = wop_testpic.user_id\n' +
+        'ORDER BY wop_testpic.post_date DESC;');
+    return rows;
+  } catch (e) {
+    console.error('picModel getAllVideos: ', e.message);
+  }
+};
+
 //Returns pics by their posting date, aka most recent
 const getAllPics = async () => {
   try {
@@ -182,7 +196,8 @@ module.exports = {
   getMediaBySearch,
   getMediaUserId,
   deleteMedia,
-  getChosenMediaByOwner
+  getChosenMediaByOwner,
+  getAllMedia
 };
 
 
