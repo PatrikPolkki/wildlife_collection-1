@@ -6,6 +6,13 @@ const ImageMeta = require('../Utils/imageMeta');
 const {makeThumbnail} = require('../Utils/resize');
 const fs = require('fs');
 
+
+// Controller for getting all media
+const media_list_get = async (req, res) => {
+  const pics = await picModel.getAllMedia();
+  await res.json(pics);
+};
+
 // Controller for getting all images
 const pic_list_get = async (req, res) => {
   const pics = await picModel.getAllPics();
@@ -20,7 +27,7 @@ const video_list_get = async (req, res) => {
 
 // Controller for getting media by most likes
 const media_list_get_by_most_likes = async (req, res) => {
-  const pics = await picModel.getMediaByMostLikes;
+  const pics = await picModel.getMediaByMostLikes();
   await res.json(pics);
 };
 
@@ -197,5 +204,6 @@ module.exports = {
   get_media_user_id,
   media_delete,
   video_list_get,
-  chosen_media_get_by_owner
+  chosen_media_get_by_owner,
+  media_list_get
 };
