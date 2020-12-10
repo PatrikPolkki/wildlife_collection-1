@@ -149,11 +149,17 @@ const createPicCards = async (pics) => {
             userComment.className = 'userComment';
             const commentOwner = document.createElement('p');
             commentOwner.className = 'commentOwner';
-            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
+            const commentDate = comment.date.replace('T', ' ').
+                replace('Z', '').
+                slice(0, -7) + '';
+            const commentdate = document.createElement('p');
+            commentdate.className = 'commentDate';
+            commentdate.innerHTML = `${commentDate}`;
+            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`
             const commentText = document.createElement('p');
             commentText.className = 'commentText';
             commentText.innerHTML += comment.comment;
-
+            userComment.appendChild(commentdate);
             userComment.appendChild(commentOwner);
             userComment.appendChild(commentText);
             commentsection.appendChild(userComment);
@@ -394,11 +400,17 @@ const createPicCards = async (pics) => {
                 userComment.className = 'userComment';
                 const commentOwner = document.createElement('p');
                 commentOwner.className = 'commentOwner';
-                commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
+                const commentDate = comment.date.replace('T', ' ').
+                    replace('Z', '').
+                    slice(0, -7) + '';
+                const commentdate = document.createElement('p');
+                commentdate.className = 'commentDate';
+                commentdate.innerHTML = `${commentDate}`;
+                commentOwner.innerHTML = `${comment.name} ${comment.lastname}`
                 const commentText = document.createElement('p');
                 commentText.className = 'commentText';
                 commentText.innerHTML += comment.comment;
-
+                userComment.appendChild(commentdate);
                 userComment.appendChild(commentOwner);
                 userComment.appendChild(commentText);
                 commentsection.appendChild(userComment);
@@ -598,11 +610,17 @@ const createPicCards = async (pics) => {
             userComment.className = 'userComment';
             const commentOwner = document.createElement('p');
             commentOwner.className = 'commentOwner';
-            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
+            const commentDate = comment.date.replace('T', ' ').
+                replace('Z', '').
+                slice(0, -7) + '';
+            const commentdate = document.createElement('p');
+            commentdate.className = 'commentDate';
+            commentdate.innerHTML = `${commentDate}`;
+            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`
             const commentText = document.createElement('p');
             commentText.className = 'commentText';
             commentText.innerHTML += comment.comment;
-
+            userComment.appendChild(commentdate);
             userComment.appendChild(commentOwner);
             userComment.appendChild(commentText);
             commentsection.appendChild(userComment);
@@ -843,11 +861,17 @@ const createPicCards = async (pics) => {
                 userComment.className = 'userComment';
                 const commentOwner = document.createElement('p');
                 commentOwner.className = 'commentOwner';
-                commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
+                const commentDate = comment.date.replace('T', ' ').
+                    replace('Z', '').
+                    slice(0, -7) + '';
+                const commentdate = document.createElement('p');
+                commentdate.className = 'commentDate';
+                commentdate.innerHTML = `${commentDate}`;
+                commentOwner.innerHTML = `${comment.name} ${comment.lastname}`
                 const commentText = document.createElement('p');
                 commentText.className = 'commentText';
                 commentText.innerHTML += comment.comment;
-
+                userComment.appendChild(commentdate);
                 userComment.appendChild(commentOwner);
                 userComment.appendChild(commentText);
                 commentsection.appendChild(userComment);
@@ -1061,10 +1085,17 @@ const createPicCardsNoToken = async (pics) => {
             userComment.className = 'userComment';
             const commentOwner = document.createElement('p');
             commentOwner.className = 'commentOwner';
-            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
+            const commentDate = comment.date.replace('T', ' ').
+                replace('Z', '').
+                slice(0, -7) + '';
+            const commentdate = document.createElement('p');
+            commentdate.className = 'commentDate';
+            commentdate.innerHTML = `${commentDate}`;
+            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`
             const commentText = document.createElement('p');
             commentText.className = 'commentText';
             commentText.innerHTML += comment.comment;
+            userComment.appendChild(commentdate);
             userComment.appendChild(commentOwner);
             userComment.appendChild(commentText);
             commentsection.appendChild(userComment);
@@ -1222,10 +1253,17 @@ const createPicCardsNoToken = async (pics) => {
             userComment.className = 'userComment';
             const commentOwner = document.createElement('p');
             commentOwner.className = 'commentOwner';
-            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
+            const commentDate = comment.date.replace('T', ' ').
+                replace('Z', '').
+                slice(0, -7) + '';
+            const commentdate = document.createElement('p');
+            commentdate.className = 'commentDate';
+            commentdate.innerHTML = `${commentDate}`;
+            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`
             const commentText = document.createElement('p');
             commentText.className = 'commentText';
             commentText.innerHTML += comment.comment;
+            userComment.appendChild(commentdate);
             userComment.appendChild(commentOwner);
             userComment.appendChild(commentText);
             commentsection.appendChild(userComment);
@@ -1327,7 +1365,7 @@ const getAllPicksNoToken = async () => {
         'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
       },
     };
-    const response = await fetch(url + '/notokenpic/pics', options);
+    const response = await fetch(url + '/notokenpic/media', options);
     const pics = await response.json();
     console.log(pics);
 
@@ -1383,7 +1421,7 @@ const getAllPicks = async () => {
         'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
       },
     };
-    const response = await fetch(url + '/pic/pics', options);
+    const response = await fetch(url + '/pic/media', options);
     const pics = await response.json();
     console.log(pics);
 
