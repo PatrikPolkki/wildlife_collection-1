@@ -70,6 +70,8 @@ closeAddImage.addEventListener('click', (evt) => {
 const createPicCards = async (pics) => {
   //Clear so if new picture is added, the whole json is loaded again and has to be rendered again
   galleryArea.innerHTML = '';
+  clearCardContainer();
+  document.querySelector('.addImageContainer').style.display = 'none';
   try {
 
     for await (const pic of pics) {
@@ -496,7 +498,6 @@ const createPicCards = async (pics) => {
                   console.log(e.message);
                 }
                 clearCardContainer();
-                await getPicsByOwner();
               });
             }
           });
@@ -946,7 +947,6 @@ const createPicCards = async (pics) => {
                   console.log(e.message);
                 }
                 clearCardContainer();
-                await getPicsByOwner();
               });
             }
           });
@@ -983,6 +983,11 @@ const createPicCards = async (pics) => {
 //creates same cards as "createPicCards", but without any eventlisteners, so not logged user can see the content
 const createPicCardsNoToken = async (pics) => {
   //Clear so if new picture is added, the whole json is loaded again and has to be rendered again
+  hero.style.display = 'none';
+  const loginInputs = document.querySelectorAll('.input-field');
+  loginInputs.forEach((input) => {
+    input.value = '';
+  });
   galleryArea.innerHTML = '';
   try {
 
@@ -1524,12 +1529,7 @@ loginForm.addEventListener('submit', async (evt) => {
     sessionStorage.setItem('token', json.token);
     console.log('token: ', sessionStorage.getItem('token'));
 
-    // Hide login and registration forms
-    hero.style.display = 'none';
-    body.style.overflow = 'auto';
-    await showLoggedNav();
-
-    await getAllPicks();
+    location.reload();
   }
 });
 
@@ -1700,7 +1700,7 @@ picForm.addEventListener('submit', async (evt) => {
   document.querySelector('.addImageContainer').style.display = 'none';
   document.querySelector('#output').src = '';
   document.querySelector('.addImageTextarea').value = '';
-  document.querySelector('.addImageInputField + label').value = '';
+  document.querySelector('.addImageInputField + labellabel').value = '';
   await checkUsername();
   await getPicsByOwner();
 
