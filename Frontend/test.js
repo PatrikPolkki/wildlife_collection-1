@@ -1473,6 +1473,15 @@ const getPicsByOwner = async (picsNumber) => {
     header.innerHTML = '';
     header.style.paddingTop = '0';
 
+
+    photo.style.fontWeight = '400';
+    photo.style.fontSize = '28px';
+    photo.style.color = '#70b757e3';
+
+    video.style.fontWeight = '200';
+    video.style.fontSize = '22px';
+    video.style.color = 'black';
+
     document.querySelector('.joku').style.display = 'flex';
     document.querySelector('.jotain').style.display = 'flex';
     document.querySelector('.frontPage').style.color = 'black';
@@ -1515,6 +1524,14 @@ const getVideosByOwner = async (picsNumber) => {
     search.style.display = 'none';
     header.innerHTML = '';
     header.style.paddingTop = '0';
+
+    video.style.fontWeight = '400';
+    video.style.fontSize = '28px';
+    video.style.color = '#70b757e3';
+
+    photo.style.fontWeight = '200';
+    photo.style.fontSize = '22px';
+    photo.style.color = 'black';
 
     document.querySelector('.joku').style.display = 'flex';
     document.querySelector('.jotain').style.display = 'flex';
@@ -1737,27 +1754,12 @@ const photo = document.querySelector('.photos');
 photo.addEventListener('click', async (evt) => {
   evt.preventDefault();
 
-  photo.style.fontWeight = '400';
-  photo.style.fontSize = '28px';
-  photo.style.color = '#70b757e3';
-
-  video.style.fontWeight = '200';
-  video.style.fontSize = '22px';
-  video.style.color = 'black';
 
   await getPicsByOwner();
 });
 const video = document.querySelector('.videos');
 video.addEventListener('click', async (evt) => {
   evt.preventDefault();
-
-  video.style.fontWeight = '400';
-  video.style.fontSize = '28px';
-  video.style.color = '#70b757e3';
-
-  photo.style.fontWeight = '200';
-  photo.style.fontSize = '22px';
-  photo.style.color = 'black';
 
   await getVideosByOwner();
 });
