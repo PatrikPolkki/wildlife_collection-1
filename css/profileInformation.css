@@ -33,21 +33,21 @@
 }
 
 .buttonHolder {
-    display: none;
+    display: flex;
     justify-content: center;
     background: #ffffff0d;
 }
 
 .addImage {
-    padding: 0.3em 3em;
-    border: 0.16em solid darkslategray;
+    padding: 1px 40px;
+    border: 3px solid darkslategray;
     text-decoration: none;
     font-family: "JetBrains Mono";
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 400;
     color: darkslategray;
-    transition: all 0.15s;
-    margin: 5px 35%;
+    transition: all 0.45s;
+    margin: 0 0 4px;
     flex: 100%;
     background: content-box;
     cursor: pointer;
@@ -180,8 +180,45 @@
     font-size: 1.7rem;
     text-decoration: none;
     transition: .5s;
+    cursor: pointer;
 }
 
 .addImageExit:hover {
     transform: scale(1.1);
+}
+.joku {
+    display: none;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-end;
+}
+.type {
+    display: flex;
+    flex-direction: row;
+}
+.photos {
+    transition: all 0.5s;
+    font-family: 'JetBrains Mono';
+    font-weight: 400;
+    font-size: 28px;
+    display: flex;
+    align-items: flex-end;
+    color: #70b757e3;
+    cursor: pointer;
+}
+.slash {
+    font-family: 'JetBrains Mono';
+    font-weight: 200;
+    font-size: 23px;
+    display: flex;
+    align-items: flex-end;
+}
+.videos {
+    transition: all 0.5s;
+    font-family: 'JetBrains Mono';
+    font-weight: 200;
+    font-size: 22px;
+    display: flex;
+    align-items: flex-end;
+    cursor: pointer;
 }

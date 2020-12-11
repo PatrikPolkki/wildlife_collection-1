@@ -92,7 +92,6 @@ const createPicCards = async (pics) => {
         const smallCard = document.createElement('div');
         smallCard.className = 'small-card';
 
-
         const img = document.createElement('img');
         img.src = url + '/Thumbnails/' + pic.filename;
 
@@ -155,7 +154,7 @@ const createPicCards = async (pics) => {
             const commentdate = document.createElement('p');
             commentdate.className = 'commentDate';
             commentdate.innerHTML = `${commentDate}`;
-            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`
+            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
             const commentText = document.createElement('p');
             commentText.className = 'commentText';
             commentText.innerHTML += comment.comment;
@@ -172,7 +171,8 @@ const createPicCards = async (pics) => {
                   'Content-Type': 'application/json',
                 },
               };
-              const response = await fetch(url + '/comments/commentuserid/' + comment.commentid,
+              const response = await fetch(
+                  url + '/comments/commentuserid/' + comment.commentid,
                   fetchOptions);
               //console.log('owner status:', json);
               return await response.json();
@@ -183,7 +183,7 @@ const createPicCards = async (pics) => {
               if (result.result === true) {
                 commentText.style.paddingRight = '17px';
                 const deleteComment = document.createElement('a');
-                deleteComment.innerHTML = `<i class="fas fa-trash-alt"></i>`
+                deleteComment.innerHTML = `<i class="fas fa-trash-alt"></i>`;
                 deleteComment.className = 'deleteComment';
                 deleteComment.addEventListener('click', async (evt) => {
                   console.log(`Delete pressed at ${comment.commentid}`);
@@ -406,7 +406,7 @@ const createPicCards = async (pics) => {
                 const commentdate = document.createElement('p');
                 commentdate.className = 'commentDate';
                 commentdate.innerHTML = `${commentDate}`;
-                commentOwner.innerHTML = `${comment.name} ${comment.lastname}`
+                commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
                 const commentText = document.createElement('p');
                 commentText.className = 'commentText';
                 commentText.innerHTML += comment.comment;
@@ -419,11 +419,13 @@ const createPicCards = async (pics) => {
                   const fetchOptions = {
                     method: 'GET',
                     headers: {
-                      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+                      'Authorization': 'Bearer ' +
+                          sessionStorage.getItem('token'),
                       'Content-Type': 'application/json',
                     },
                   };
-                  const response = await fetch(url + '/comments/commentuserid/' + comment.commentid,
+                  const response = await fetch(
+                      url + '/comments/commentuserid/' + comment.commentid,
                       fetchOptions);
                   //console.log('owner status:', json);
                   return await response.json();
@@ -434,7 +436,7 @@ const createPicCards = async (pics) => {
                   if (result.result === true) {
                     commentText.style.paddingRight = '17px';
                     const deleteComment = document.createElement('a');
-                    deleteComment.innerHTML = `<i class="fas fa-trash-alt"></i>`
+                    deleteComment.innerHTML = `<i class="fas fa-trash-alt"></i>`;
                     deleteComment.className = 'deleteComment';
                     deleteComment.addEventListener('click', async (evt) => {
                       console.log(`Delete pressed at ${comment.commentid}`);
@@ -448,7 +450,8 @@ const createPicCards = async (pics) => {
                         };
                         console.log(options);
                         const response = await fetch(
-                            url + '/comments/delete/' + comment.commentid, options);
+                            url + '/comments/delete/' + comment.commentid,
+                            options);
                         const json = await response.json();
                         console.log('Delete response: ', json);
                         userComment.remove();
@@ -536,9 +539,7 @@ const createPicCards = async (pics) => {
         text.appendChild(owner);
         text.appendChild(likesSmallCard);
         galleryArea.appendChild(smallCard);
-      }
-
-      else {
+      } else {
         const getStatus = await getLikeStatus(pic.pic_id);
         const hasLiked = getStatus.result;
         console.log(hasLiked);
@@ -616,7 +617,7 @@ const createPicCards = async (pics) => {
             const commentdate = document.createElement('p');
             commentdate.className = 'commentDate';
             commentdate.innerHTML = `${commentDate}`;
-            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`
+            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
             const commentText = document.createElement('p');
             commentText.className = 'commentText';
             commentText.innerHTML += comment.comment;
@@ -633,7 +634,8 @@ const createPicCards = async (pics) => {
                   'Content-Type': 'application/json',
                 },
               };
-              const response = await fetch(url + '/comments/commentuserid/' + comment.commentid,
+              const response = await fetch(
+                  url + '/comments/commentuserid/' + comment.commentid,
                   fetchOptions);
               //console.log('owner status:', json);
               return await response.json();
@@ -644,7 +646,7 @@ const createPicCards = async (pics) => {
               if (result.result === true) {
                 commentText.style.paddingRight = '17px';
                 const deleteComment = document.createElement('a');
-                deleteComment.innerHTML = `<i class="fas fa-trash-alt"></i>`
+                deleteComment.innerHTML = `<i class="fas fa-trash-alt"></i>`;
                 deleteComment.className = 'deleteComment';
                 deleteComment.addEventListener('click', async (evt) => {
                   console.log(`Delete pressed at ${comment.commentid}`);
@@ -867,7 +869,7 @@ const createPicCards = async (pics) => {
                 const commentdate = document.createElement('p');
                 commentdate.className = 'commentDate';
                 commentdate.innerHTML = `${commentDate}`;
-                commentOwner.innerHTML = `${comment.name} ${comment.lastname}`
+                commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
                 const commentText = document.createElement('p');
                 commentText.className = 'commentText';
                 commentText.innerHTML += comment.comment;
@@ -880,11 +882,13 @@ const createPicCards = async (pics) => {
                   const fetchOptions = {
                     method: 'GET',
                     headers: {
-                      'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+                      'Authorization': 'Bearer ' +
+                          sessionStorage.getItem('token'),
                       'Content-Type': 'application/json',
                     },
                   };
-                  const response = await fetch(url + '/comments/commentuserid/' + comment.commentid,
+                  const response = await fetch(
+                      url + '/comments/commentuserid/' + comment.commentid,
                       fetchOptions);
                   //console.log('owner status:', json);
                   return await response.json();
@@ -895,7 +899,7 @@ const createPicCards = async (pics) => {
                   if (result.result === true) {
                     commentText.style.paddingRight = '17px';
                     const deleteComment = document.createElement('a');
-                    deleteComment.innerHTML = `<i class="fas fa-trash-alt"></i>`
+                    deleteComment.innerHTML = `<i class="fas fa-trash-alt"></i>`;
                     deleteComment.className = 'deleteComment';
                     deleteComment.addEventListener('click', async (evt) => {
                       console.log(`Delete pressed at ${comment.commentid}`);
@@ -909,7 +913,8 @@ const createPicCards = async (pics) => {
                         };
                         console.log(options);
                         const response = await fetch(
-                            url + '/comments/delete/' + comment.commentid, options);
+                            url + '/comments/delete/' + comment.commentid,
+                            options);
                         const json = await response.json();
                         console.log('Delete response: ', json);
                         userComment.remove();
@@ -1091,7 +1096,7 @@ const createPicCardsNoToken = async (pics) => {
             const commentdate = document.createElement('p');
             commentdate.className = 'commentDate';
             commentdate.innerHTML = `${commentDate}`;
-            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`
+            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
             const commentText = document.createElement('p');
             commentText.className = 'commentText';
             commentText.innerHTML += comment.comment;
@@ -1117,10 +1122,10 @@ const createPicCardsNoToken = async (pics) => {
 
           const interactionModalLikeButton = document.createElement('p');
           interactionModalLikeButton.className = 'like';
-          interactionModalLikeButton.style.cursor = 'initial';
+          interactionModalLikeButton.style.pointerEvents = 'none';
           const interactionModalDislikeButton = document.createElement('p');
           interactionModalDislikeButton.className = 'like';
-          interactionModalDislikeButton.style.cursor = 'initial';
+          interactionModalDislikeButton.style.pointerEvents = 'none';
 
           thumbsUp.appendChild(interactionModalLikeButton);
           thumbsDown.appendChild(interactionModalDislikeButton);
@@ -1149,7 +1154,7 @@ const createPicCardsNoToken = async (pics) => {
           button.innerHTML = 'POST';
           button.type = 'submit';
           button.setAttribute('disabled', true);
-          button.style.cursor = 'initial';
+          button.style.pointerEvents = 'none';
 
           modalForm.appendChild(button);
 
@@ -1259,7 +1264,7 @@ const createPicCardsNoToken = async (pics) => {
             const commentdate = document.createElement('p');
             commentdate.className = 'commentDate';
             commentdate.innerHTML = `${commentDate}`;
-            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`
+            commentOwner.innerHTML = `${comment.name} ${comment.lastname}`;
             const commentText = document.createElement('p');
             commentText.className = 'commentText';
             commentText.innerHTML += comment.comment;
@@ -1285,10 +1290,10 @@ const createPicCardsNoToken = async (pics) => {
 
           const interactionModalLikeButton = document.createElement('p');
           interactionModalLikeButton.className = 'like';
-          interactionModalLikeButton.style.cursor = 'initial';
+          interactionModalLikeButton.style.pointerEvents = 'none';
           const interactionModalDislikeButton = document.createElement('p');
           interactionModalDislikeButton.className = 'like';
-          interactionModalDislikeButton.style.cursor = 'initial';
+          interactionModalDislikeButton.style.pointerEvents = 'none';
 
           thumbsUp.appendChild(interactionModalLikeButton);
           thumbsDown.appendChild(interactionModalDislikeButton);
@@ -1317,6 +1322,7 @@ const createPicCardsNoToken = async (pics) => {
           button.innerHTML = 'POST';
           button.type = 'submit';
           button.setAttribute('disabled', true);
+          button.style.pointerEvents = 'none';
 
           modalForm.appendChild(button);
 
@@ -1428,7 +1434,7 @@ const getAllPicks = async () => {
     search.style.display = 'flex';
     header.innerHTML = 'LATEST';
     header.style.paddingTop = '90px';
-    document.querySelector('.buttonHolder').style.display = 'none';
+    document.querySelector('.joku').style.display = 'none';
     document.querySelector('.jotain').style.display = 'none';
     document.querySelector('.profile').style.color = 'black';
     document.querySelector('.frontPage').style.color = '#43A047';
@@ -1448,7 +1454,8 @@ const getPicsByOwner = async (picsNumber) => {
         'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
       },
     };
-    const response = await fetch(url + '/pic/userpics', options);
+    const response = await fetch(url + '/pic/specifiedusermedia/image',
+        options);
     const pics = await response.json();
     console.log(pics);
     await createPicCards(pics);
@@ -1464,7 +1471,7 @@ const getPicsByOwner = async (picsNumber) => {
     header.innerHTML = '';
     header.style.paddingTop = '0';
 
-    document.querySelector('.buttonHolder').style.display = 'flex';
+    document.querySelector('.joku').style.display = 'flex';
     document.querySelector('.jotain').style.display = 'flex';
     document.querySelector('.frontPage').style.color = 'black';
     document.querySelector('.profile').style.color = '#43A047';
@@ -1477,6 +1484,49 @@ const getPicsByOwner = async (picsNumber) => {
       noImages.style.height = '100%';
       noImages.style.padding = '50px 0 200px 0';
       noImages.innerHTML = `<h4 style="font-family: Raleway; font-weight: 600; font-size: 20px">You Don't Have Any Picture</h4>`;
+      galleryArea.appendChild(noImages);
+    }
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+const getVideosByOwner = async (picsNumber) => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/pic/specifiedusermedia/video',
+        options);
+    const pics = await response.json();
+    console.log(pics);
+    await createPicCards(pics);
+
+    picsNumber = 0;
+    for (const pic in pics) {
+      picsNumber += 1;
+    }
+    console.log('picnumber', picsNumber);
+    document.querySelector('.userInfo p').innerHTML = `${picsNumber} Videos`;
+
+    search.style.display = 'none';
+    header.innerHTML = '';
+    header.style.paddingTop = '0';
+
+    document.querySelector('.joku').style.display = 'flex';
+    document.querySelector('.jotain').style.display = 'flex';
+    document.querySelector('.frontPage').style.color = 'black';
+    document.querySelector('.profile').style.color = '#43A047';
+    if (pics.length === 0) {
+      console.log('pics is empty');
+      const noImages = document.createElement('div');
+      noImages.style.display = 'flex';
+      noImages.style.justifyContent = 'center';
+      noImages.style.width = '100%';
+      noImages.style.height = '100%';
+      noImages.style.padding = '50px 0 200px 0';
+      noImages.innerHTML = `<h4 style="font-family: Raleway; font-weight: 600; font-size: 20px">You Don't Have Any Videos</h4>`;
       galleryArea.appendChild(noImages);
     }
   } catch (e) {
@@ -1681,6 +1731,35 @@ logo.addEventListener('click', async (evt) => {
   }
 });
 
+const photo = document.querySelector('.photos');
+photo.addEventListener('click', async (evt) => {
+  evt.preventDefault();
+
+  photo.style.fontWeight = '400';
+  photo.style.fontSize = '28px';
+  photo.style.color = '#70b757e3';
+
+  video.style.fontWeight = '200';
+  video.style.fontSize = '22px';
+  video.style.color = 'black';
+
+  await getPicsByOwner();
+});
+const video = document.querySelector('.videos');
+video.addEventListener('click', async (evt) => {
+  evt.preventDefault();
+
+  video.style.fontWeight = '400';
+  video.style.fontSize = '28px';
+  video.style.color = '#70b757e3';
+
+  photo.style.fontWeight = '200';
+  photo.style.fontSize = '22px';
+  photo.style.color = 'black';
+
+  await getVideosByOwner();
+});
+
 const addImage = document.querySelector('.addImage');
 addImage.addEventListener('click', (evt) => {
   console.log(evt);
@@ -1738,7 +1817,9 @@ picForm.addEventListener('submit', async (evt) => {
   document.querySelector('.addImageContainer').style.display = 'none';
   document.querySelector('#output').src = '';
   document.querySelector('.addImageTextarea').value = '';
-  document.querySelector('.addImageInputField + labellabel').value = '';
+  document.querySelector('.addImageInputField').value = '';
+  document.querySelector('#fileLabel').innerHTML = 'CHOOSE FILE';
+
   await checkUsername();
   await getPicsByOwner();
 
