@@ -222,3 +222,17 @@
     align-items: flex-end;
     cursor: pointer;
 }
+@media only screen and (max-width: 550px) {
+    .photos {
+        font-size: 6vw;
+    }
+    .slash {
+        font-size: 4vw;
+    }
+    .videos {
+        font-size: 4vw;
+    }
+    .addImage {
+        font-size: 16px;
+    }
+}
