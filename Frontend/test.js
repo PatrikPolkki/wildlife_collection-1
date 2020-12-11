@@ -72,6 +72,7 @@ const createPicCards = async (pics) => {
   galleryArea.innerHTML = '';
   clearCardContainer();
   document.querySelector('.addImageContainer').style.display = 'none';
+  document.querySelector('.map-container').style.display = 'none';
   try {
 
     for await (const pic of pics) {
@@ -1017,6 +1018,7 @@ const createPicCardsNoToken = async (pics) => {
   loginInputs.forEach((input) => {
     input.value = '';
   });
+  document.querySelector('.map-container').style.display = 'none';
   galleryArea.innerHTML = '';
   try {
 

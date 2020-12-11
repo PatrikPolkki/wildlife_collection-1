@@ -326,6 +326,7 @@
     .card {
         flex-direction: column;
         height: 100%;
+        padding-top: 21px !important;
     }
     .background {
         height: 50%;
