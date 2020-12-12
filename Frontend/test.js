@@ -21,6 +21,7 @@ const commentsection = document.querySelector('.comments');
 const likeSection = document.querySelector('.likeSection');
 const deleteButton = document.querySelector('.deleteButton');
 
+//exit buttons on models
 const closeInteractionModel = document.querySelector('.exit');
 const closeHeroForm = document.querySelector('.loginExit');
 const closeMapModal = document.querySelector('.exitMap');
@@ -54,19 +55,21 @@ closeHeroForm.addEventListener('click', (evt) => {
   hero.style.display = 'none';
   body.style.overflow = 'auto';
 });
+
 //close map
 closeMapModal.addEventListener('click', async (evt) => {
   evt.preventDefault();
   document.querySelector('.map-container').style.display = 'none';
   marker.remove();
 });
-//closes add image
+
+//closes add image modal
 closeAddImage.addEventListener('click', (evt) => {
   evt.preventDefault();
   document.querySelector('.addImageContainer').style.display = 'none';
 });
 
-//creates small image cards and by clicking by them it opens up larger image card with more information and functionalites
+//creates small image cards and by clicking by them it opens up larger image card with more information and functionalities
 const createPicCards = async (pics) => {
   //Clear so if new picture is added, the whole json is loaded again and has to be rendered again
   galleryArea.innerHTML = '';
@@ -77,6 +80,7 @@ const createPicCards = async (pics) => {
 
     for await (const pic of pics) {
 
+      //if clicked small card is image it goes here and else it goes video function
       if (pic.mediatype === 'image') {
 
         const getStatus = await getLikeStatus(pic.pic_id);
@@ -90,9 +94,11 @@ const createPicCards = async (pics) => {
         const updatedLikes = await getLikes(pic.pic_id);
         console.log(updatedLikes);
 
+        //create small image card holder
         const smallCard = document.createElement('div');
         smallCard.className = 'small-card';
 
+        //creates image inside small card
         const img = document.createElement('img');
         img.src = url + '/Thumbnails/' + pic.filename;
 
@@ -104,6 +110,7 @@ const createPicCards = async (pics) => {
           cardContainer.style.display = 'flex';
           body.style.overflow = 'hidden';
 
+          //if display map modal on map icon click
           const modalMapButton = document.querySelector('.map');
           modalMapButton.addEventListener('click', async (evt) => {
             evt.preventDefault();
@@ -133,15 +140,18 @@ const createPicCards = async (pics) => {
           modalPic.src = img.src = url + '/Thumbnails/' + pic.filename;
           gradient.appendChild(modalPic);
 
+          //append username
           const username = document.createElement('h1');
           username.className = 'username';
           username.innerHTML = `${pic.name} ${pic.lastname}`;
           document.querySelector('.header div').appendChild(username);
 
+          //append descripotion text
           const descriptionText = document.createElement('p');
           descriptionText.className = 'descriptionText';
           descriptionText.innerHTML = `${pic.description}`;
 
+          //append comments and creates username, postdate and comment inside each comment
           const comments = await getComments(pic.pic_id);
           console.log(comments);
           for await (const comment of comments) {
@@ -163,6 +173,7 @@ const createPicCards = async (pics) => {
             userComment.appendChild(commentOwner);
             userComment.appendChild(commentText);
             commentsection.appendChild(userComment);
+
 
             const checkOwnerShip = async () => {
               const fetchOptions = {
@@ -213,6 +224,7 @@ const createPicCards = async (pics) => {
             await checkOwner;
           }
 
+          //create postdate on modal
           const date = document.createElement('p');
           date.className = 'date';
           const postDate = pic.post_date.replace('T', ' ').
@@ -222,6 +234,7 @@ const createPicCards = async (pics) => {
           document.querySelector('.description').appendChild(date);
           document.querySelector('.description').appendChild(descriptionText);
 
+          //creates like and dislike buttons to modal
           const likes = document.createElement('div');
           likes.className = 'likes';
           const thumbsUp = document.createElement('div');
@@ -254,10 +267,12 @@ const createPicCards = async (pics) => {
             interactionModalDislikeButton.innerHTML = `<a class="thumbsIcon"><i class="fas fa-thumbs-down"></i></a> ${updatedLikes[0].dislikes}`;
           }
 
+          //check if user has liked image or not
           const getStatus = await getLikeStatus(pic.pic_id);
           const hasLiked = getStatus.result;
           console.log(hasLiked);
 
+          //if user has not liked image
           if (!hasLiked) {
             //Like photo
             interactionModalLikeButton.addEventListener('click',
@@ -351,6 +366,7 @@ const createPicCards = async (pics) => {
                   }
                 });
           }
+          //creates form for adding comment
           const modalForm = document.createElement('form');
           modalForm.id = 'commentForm';
 
@@ -395,6 +411,7 @@ const createPicCards = async (pics) => {
               console.log(comments);
               commentArea.value = '';
 
+              //updates comments
               commentsection.innerHTML = '';
               for await (const comment of comments) {
                 const userComment = document.createElement('div');
@@ -521,15 +538,18 @@ const createPicCards = async (pics) => {
           await checkOwner;
         });
 
+        //creates information div for small image card
         const text = document.createElement('div');
         text.className = 'text';
 
+        //create owner name
         const owner = document.createElement('h2');
         owner.innerHTML = `${pic.name} ${pic.lastname}`;
 
         const likesSmallCard = document.createElement('p');
 
         const commentsNumber = await getComments(pic.pic_id);
+        //show number of likes and comments on small image card
         if (updatedLikes[0] === undefined) {
           likesSmallCard.innerHTML = `Likes 0 Comments 0`;
         } else {
@@ -540,7 +560,9 @@ const createPicCards = async (pics) => {
         text.appendChild(owner);
         text.appendChild(likesSmallCard);
         galleryArea.appendChild(smallCard);
-      } else {
+      }
+      //if media type wasn't image, it does same thing as the first function but for videos, so all image elements are replaced by video element
+      else {
         const getStatus = await getLikeStatus(pic.pic_id);
         const hasLiked = getStatus.result;
         console.log(hasLiked);
@@ -1010,7 +1032,7 @@ const createPicCards = async (pics) => {
   }
 };
 
-//creates same cards as "createPicCards", but without any eventlisteners, so not logged user can see the content
+//this is for non logged user. Creates same small image cards and modals as "createPicCards", but without any eventlisteners
 const createPicCardsNoToken = async (pics) => {
   //Clear so if new picture is added, the whole json is loaded again and has to be rendered again
   hero.style.display = 'none';
@@ -1366,62 +1388,7 @@ const createPicCardsNoToken = async (pics) => {
   }
 };
 
-const getAllPicksNoToken = async () => {
-  try {
-    const options = {
-      headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-      },
-    };
-    const response = await fetch(url + '/notokenpic/media', options);
-    const pics = await response.json();
-    console.log(pics);
-
-    search.style.display = 'flex';
-    latest.style.borderBottom = 'solid 2px grey';
-    mostLiked.style.borderBottom = 'solid 1px darkgray';
-    header.innerHTML = 'LATEST';
-    showNotLoggedNav();
-    await createPicCardsNoToken(pics);
-  } catch (e) {
-    console.log(e.message);
-  }
-};
-const getAllPicksByMostLikesNoToken = async () => {
-  try {
-    const options = {
-      headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-      },
-    };
-    const response = await fetch(url + '/notokenpic/mostlikes', options);
-    const pics = await response.json();
-    console.log(pics);
-    search.style.display = 'flex';
-    latest.style.borderBottom = 'solid 1px darkgray';
-    mostLiked.style.borderBottom = 'solid 2px grey';
-    header.innerHTML = 'MOST LIKED';
-    await createPicCardsNoToken(pics);
-  } catch (e) {
-    console.log(e.message);
-  }
-};
-
-const getLikeStatus = async (pic_id) => {
-  try {
-    const options = {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-        'Content-Type': 'application/json',
-      },
-    };
-    const response = await fetch(url + '/likes/likestatus/' + pic_id, options);
-    return await response.json();
-  } catch (e) {
-    console.error(e.message);
-  }
-};
+//get all pics and videos by order of upload
 const getAllPicks = async () => {
   try {
     const options = {
@@ -1433,6 +1400,7 @@ const getAllPicks = async () => {
     const pics = await response.json();
     console.log(pics);
 
+    //display frontpage and shows which media is on frontpage(Latest)
     search.style.display = 'flex';
     header.innerHTML = 'LATEST';
     header.style.paddingTop = '90px';
@@ -1449,6 +1417,28 @@ const getAllPicks = async () => {
     console.log(e.message);
   }
 };
+//get all pics and videos by order of mostliked
+const getAllPicksByMostLikes = async () => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/pic/mostlikes', options);
+    const pics = await response.json();
+    console.log(pics);
+    //display frontpage and shows which media is on frontpage(Most Liked)
+    search.style.display = 'flex';
+    latest.style.borderBottom = 'solid 1px darkgray';
+    mostLiked.style.borderBottom = 'solid 2px grey';
+    header.innerHTML = 'MOST LIKED';
+    await createPicCards(pics);
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+//get all pics by owner
 const getPicsByOwner = async (picsNumber) => {
   try {
     const options = {
@@ -1501,6 +1491,7 @@ const getPicsByOwner = async (picsNumber) => {
     console.log(e.message);
   }
 };
+//get all videos by owner
 const getVideosByOwner = async (picsNumber) => {
   try {
     const options = {
@@ -1552,26 +1543,129 @@ const getVideosByOwner = async (picsNumber) => {
     console.log(e.message);
   }
 };
-const getAllPicksByMostLikes = async () => {
+
+//get like status if user has liked picture or not
+const getLikeStatus = async (pic_id) => {
+  try {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+        'Content-Type': 'application/json',
+      },
+    };
+    const response = await fetch(url + '/likes/likestatus/' + pic_id, options);
+    return await response.json();
+  } catch (e) {
+    console.error(e.message);
+  }
+};
+//likes
+const getLikes = async (pic_id) => {
   try {
     const options = {
       headers: {
         'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
       },
     };
-    const response = await fetch(url + '/pic/mostlikes', options);
+    const response = await fetch(url + '/likes/' + pic_id,
+        options);
+    return await response.json();
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+//comments
+const getComments = async (pic_id) => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/comments/' + pic_id,
+        options);
+    return await response.json();
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+
+//get all pics for non logged user
+const getAllPicksNoToken = async () => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/notokenpic/media', options);
+    const pics = await response.json();
+    console.log(pics);
+
+    search.style.display = 'flex';
+    latest.style.borderBottom = 'solid 2px grey';
+    mostLiked.style.borderBottom = 'solid 1px darkgray';
+    header.innerHTML = 'LATEST';
+    showNotLoggedNav();
+    await createPicCardsNoToken(pics);
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+//get pics by mostliked for non logged user
+const getAllPicksByMostLikesNoToken = async () => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/notokenpic/mostlikes', options);
     const pics = await response.json();
     console.log(pics);
     search.style.display = 'flex';
     latest.style.borderBottom = 'solid 1px darkgray';
     mostLiked.style.borderBottom = 'solid 2px grey';
     header.innerHTML = 'MOST LIKED';
-    await createPicCards(pics);
+    await createPicCardsNoToken(pics);
   } catch (e) {
     console.log(e.message);
   }
 };
 
+//get likes for not logged user
+const getLikesNoToken = async (pic_id) => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/notokenlikes/' + pic_id,
+        options);
+    return await response.json();
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+//get comments for not logged user
+const getCommentsNoToken = async (pic_id) => {
+  try {
+    const options = {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+      },
+    };
+    const response = await fetch(url + '/notokencomments/' + pic_id,
+        options);
+    return await response.json();
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+
+//gets username of pic/video owner
 const checkUsername = async () => {
   try {
     const options = {
@@ -1583,6 +1677,7 @@ const checkUsername = async () => {
     const response = await fetch(url + '/user/check/userlogged', options);
     const username = await response.json();
     console.log(username);
+    //set logged user username in profile
     document.querySelector(
         '.userInfo h1').innerHTML = `${username.name} ${username.lastname}`;
   } catch (e) {
@@ -1696,9 +1791,8 @@ searchForm.addEventListener('submit', async (evt) => {
   }
 });
 
-//latest and mostliked
+//display latest pics and videos
 const latest = document.querySelector('.latestPics');
-const mostLiked = document.querySelector('.mostlikedPics');
 latest.addEventListener('click', (evt) => {
   if (sessionStorage.getItem('token')) {
     getAllPicks();
@@ -1706,7 +1800,8 @@ latest.addEventListener('click', (evt) => {
     getAllPicksNoToken();
   }
 });
-
+//display mostliked pics and videos
+const mostLiked = document.querySelector('.mostlikedPics');
 mostLiked.addEventListener('click', (evt) => {
   if (sessionStorage.getItem('token')) {
     getAllPicksByMostLikes();
@@ -1717,7 +1812,7 @@ mostLiked.addEventListener('click', (evt) => {
   }
 });
 
-//logged user navbar functionalities
+//display profile page by click on profile in navbar
 const profile = document.querySelector('.profile');
 profile.addEventListener('click', async (evt) => {
   evt.preventDefault();
@@ -1729,6 +1824,7 @@ profile.addEventListener('click', async (evt) => {
   }
 });
 
+//display frontpage by click on frontpage in navbar
 const frontPage = document.querySelector('.frontPage');
 frontPage.addEventListener('click', async (evt) => {
   evt.preventDefault();
@@ -1739,6 +1835,7 @@ frontPage.addEventListener('click', async (evt) => {
   }
 });
 
+//display frontpage by click on logo
 const logo = document.querySelector('.logo');
 logo.addEventListener('click', async (evt) => {
   evt.preventDefault();
@@ -1750,6 +1847,7 @@ logo.addEventListener('click', async (evt) => {
   }
 });
 
+//in user profile, display user pics by click on photo
 const photo = document.querySelector('.photos');
 photo.addEventListener('click', async (evt) => {
   evt.preventDefault();
@@ -1757,6 +1855,8 @@ photo.addEventListener('click', async (evt) => {
 
   await getPicsByOwner();
 });
+
+//in user profile, display user videos by click on video
 const video = document.querySelector('.videos');
 video.addEventListener('click', async (evt) => {
   evt.preventDefault();
@@ -1764,6 +1864,7 @@ video.addEventListener('click', async (evt) => {
   await getVideosByOwner();
 });
 
+//display add image form by click on add image
 const addImage = document.querySelector('.addImage');
 addImage.addEventListener('click', (evt) => {
   console.log(evt);
@@ -1771,6 +1872,7 @@ addImage.addEventListener('click', (evt) => {
   document.querySelector('.addImageContainer').style.display = 'flex';
 });
 
+//display chosen file name by change of fileinput
 const input = document.querySelector('.addImageInputField');
 input.addEventListener('change', (evt) => {
   loadFile(event);
@@ -1829,71 +1931,15 @@ picForm.addEventListener('submit', async (evt) => {
 
 });
 
-//creates small image from image you want to post
+//creates small image from image you want to post on add image modal
 const loadFile = (event) => {
   const image = document.getElementById('output');
   image.src = URL.createObjectURL(event.target.files[0]);
 };
 
-//likes and comments
-const getLikes = async (pic_id) => {
-  try {
-    const options = {
-      headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-      },
-    };
-    const response = await fetch(url + '/likes/' + pic_id,
-        options);
-    return await response.json();
-  } catch (e) {
-    console.log(e.message);
-  }
-};
-const getComments = async (pic_id) => {
-  try {
-    const options = {
-      headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-      },
-    };
-    const response = await fetch(url + '/comments/' + pic_id,
-        options);
-    return await response.json();
-  } catch (e) {
-    console.log(e.message);
-  }
-};
 
-//get likes and comments for not logged user but prevents not logged user actions
-const getLikesNoToken = async (pic_id) => {
-  try {
-    const options = {
-      headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-      },
-    };
-    const response = await fetch(url + '/notokenlikes/' + pic_id,
-        options);
-    return await response.json();
-  } catch (e) {
-    console.log(e.message);
-  }
-};
-const getCommentsNoToken = async (pic_id) => {
-  try {
-    const options = {
-      headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-      },
-    };
-    const response = await fetch(url + '/notokencomments/' + pic_id,
-        options);
-    return await response.json();
-  } catch (e) {
-    console.log(e.message);
-  }
-};
+
+
 
 //add marker into map
 const addMarker = (coords) => {
@@ -1901,7 +1947,7 @@ const addMarker = (coords) => {
   marker = new mapboxgl.Marker().setLngLat(coords).addTo(map);
 };
 
-//some simple functions
+//simple function for clearing image modal
 const clearCardContainer = () => {
   gradient.innerHTML = '';
   document.querySelector('.header div').innerHTML = '';
@@ -1918,6 +1964,8 @@ const clearCardContainer = () => {
   cardContainer.style.display = 'none';
   body.style.overflow = '';
 };
+
+//Show logged user navbar
 const showLoggedNav = async () => {
   try {
     const options = {
@@ -1940,7 +1988,7 @@ const showLoggedNav = async () => {
     console.log(e.message);
   }
 };
-
+//show non logged user navbar
 const showNotLoggedNav = () => {
   links.style.display = 'flex';
   istokenLinks.style.display = 'none';
