@@ -36,7 +36,7 @@ Responsive design.
 * Put the keys and certificate in the root folder
 
 #### Database model for database
-* **Take a look at:** lauriari.sql file
+* **Take a look at:** [lauriari.sql](https://github.com/Lauri92/wildlife_collection/blob/master/lauriari.sql) file
 
 #### Required database information and JWT secretOrPrivatekey
 
