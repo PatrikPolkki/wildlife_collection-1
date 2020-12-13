@@ -69,3 +69,6 @@ Responsive design.
 
 #### Start app by typing
 node app.js
+
+#### Open http://localhost:3000 or https://localhost:8000
+* http is redirected to https
