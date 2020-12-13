@@ -1,8 +1,8 @@
-#Wildlife Collection
+# Wildlife Collection
 
 A place for people to share photos and videos of nature.
 
-##Features
+## Features
 
 Possibility to browse photos and videos posted by users.
 
@@ -20,12 +20,12 @@ Admin users have possibility to delete anything.
 
 Responsive design.
 
-##Getting started
+## Getting started
 
-####Install dependencies
+#### Install dependencies
 * npm i
 
-####Generate keys and certificate with openssl for HTTPS
+#### Generate keys and certificate with openssl for HTTPS
 * openssl genrsa -out ssl-key.pem 2048
 
 * openssl req -new -key ssl-key.pem -out certrequest.csr
@@ -35,12 +35,12 @@ Responsive design.
 
 * Put the keys and certificate in the root folder
 
-####Database model for database
+#### Database model for database
 * **Take a look at:** lauriari.sql file
 
-####Required database information and JWT secretOrPrivatekey
+#### Required database information and JWT secretOrPrivatekey
 
-####Provide  *.env* with your corresponding values
+#### Provide  *.env* with your corresponding values
 
 * DB_HOST=`<db>`
 
@@ -60,12 +60,12 @@ Responsive design.
 
 
 
-####Create folders for media to be uploaded into 
+#### Create folders for media to be uploaded into 
 
 * Uploads
 * Thumbnails
 
 
 
-####Start app by typing
+#### Start app by typing
 node app.js
