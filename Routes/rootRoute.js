@@ -6,23 +6,23 @@ const path = require('path');
 
 router.get('/', (req, res) => {
   console.log('rootRoute: root route with req:', req.query);
-  //res.send(`Hello world <a href="cat">Click</a><br>
-  //with test is ${req.query.test} and fsun is ${req.query.more}`);
-  //res.sendFile('test.html', { root: '.' });
   //res.send(`<h1>Hello Index page</h1>`);
-  res.render('test.html')
+  res.render('index.html')
 });
 
+// No use
 router.post('/', (req, res) => {
   console.log('rootRoute: / route with post', req.body);
   res.send('Hello root route with http post');
 });
 
+// No use
 router.put('/', (req, res) => {
   console.log('rootRoute: http put');
   res.send('http put on root route');
 });
 
+// No use
 router.delete('/', (req, res) => {
   console.log('rootRoute: http delete');
   res.send('http delete on root route');

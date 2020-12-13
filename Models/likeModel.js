@@ -2,6 +2,7 @@
 const pool = require('../Database/db');
 const promisePool = pool.promise();
 
+// Get likes and dislikes of a media
 const getLikesById = async (id) => {
   try {
     const [rows] = await promisePool.execute(
@@ -16,27 +17,8 @@ const getLikesById = async (id) => {
     console.error('likeMode getLikesById: ', e.message);
   }
 };
-/*
-const createLikesForPic = async (req, id) => {
-  console.log('likeModel createLikes req.body: ', id);
-  try {
-    //0 to avoid null in the database
-    const [rows] = await promisePool.execute(
-        'INSERT INTO wop_testlikes (pic_id, likes, dislikes)' +
-        'VALUES (?, ?, ?, ?)',
-        [
-          id,
-          0,
-          0,
-          req.user.user_id]);
-    console.log('likeModel createLikesForPic: ', rows);
-    return rows.insertId;
-  } catch (e) {
-    console.log('likeModel createLikesForPic error: ', e);
-    return 0;
-  }
-};
-*/
+
+// Inser a like or a dislike
 const createUserLike = async (req) => {
   try {
     console.log('likeModel createUserLike id: ', req.body);
@@ -55,19 +37,7 @@ const createUserLike = async (req) => {
   }
 };
 
-const incrementDislike = async (id) => {
-  try {
-    console.log('likeModel incrementDislike id: ', id);
-    const [rows] = await promisePool.execute(
-        `UPDATE wop_testlikes SET dislikes = dislikes + 1 WHERE pic_id = ?`,
-        [id],
-    );
-    return rows;
-  } catch (err) {
-    console.error('likeModel incrementDislike: ', err.message);
-  }
-};
-
+// Check if user has liked or disliked already
 const likeStatus = async (req, res) => {
   try {
     console.log('likeModel likeStatus :', req.body.user_id, req.body.pic_id);
@@ -85,8 +55,6 @@ const likeStatus = async (req, res) => {
 
 module.exports = {
   getLikesById,
-  //createLikesForPic,
   createUserLike,
-  incrementDislike,
   likeStatus
 };

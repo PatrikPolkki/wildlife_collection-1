@@ -4,8 +4,7 @@ const express = require('express');
 const likeController = require('../Controllers/likeController');
 const router = express.Router();
 
-//router.post('/:id', likeController.create_likes);
-
+// Only get for non logged in users
 router.get('/:id', likeController.get_likes_by_id);
 
 module.exports = router;

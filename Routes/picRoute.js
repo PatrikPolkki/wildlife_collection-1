@@ -10,6 +10,7 @@ const english = require('naughty-words/en.json')
 // Prevent multer for saving wrong file types
 const fileFilter = (req, file, cb) => {
   console.log(`fileFilter file: ${file.mimetype}`);
+  // Only accept images and videos
   try {
     if (file.mimetype.includes('image') || file.mimetype.includes('video')) {
       return cb(null, true);
@@ -21,19 +22,10 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-const checkSize = (err, req, res, next) => {
-  console.log('here');
-  if (err.code === 'LIMIT_FILE_SIZE') {
-    res.send({ result: 'fail', error: { code: 1001, message: 'File is too big' } })
-    return
-  }
-
-  // Handle any other errors
-}
-
 // Upload image and add size limit
 const limits = { fileSize: 50 * 1024 * 1024 };  //50MB
 const upload = multer({limits: limits, dest: 'Uploads/', fileFilter});
+
 
 const injectFile = (req, res, next) => {
   console.log('injectFile req.file: ', req.file);

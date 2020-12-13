@@ -44,6 +44,7 @@ const insertUser = async (req) => {
   }
 };
 
+// Get users email
 const getUserLogin = async (params) => {
   try {
     console.log('getUserLogin', params);

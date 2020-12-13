@@ -58,15 +58,14 @@ const getMediaByMostLikes = async () => {
         'ORDER BY LIKES DESC');
     return rows;
   } catch (e) {
-    console.error('picModel getMediaByMostLikes');
+    console.error('picModel getMediaByMostLikes', e.message);
   }
 };
 
-// Returns single media item of a user
+// Returns single media item of a user, used for showing added row
 const getMediaById = async (id) => {
   try {
     console.log('picModel getMediaById', id);
-    //const [rows] = await promisePool.execute(`SELECT * FROM wop_cat WHERE cat_id = ${id}`);
     const [rows] = await promisePool.execute(
         'SELECT * FROM wop_testpic WHERE pic_id = ?', [id]);
     return rows[0];
@@ -163,6 +162,7 @@ const insertMedia = async (req) => {
           req.body.postDate,
           req.body.mediatype]);
     console.log('picModel insert: ', rows);
+    //Used to display inserted information
     return rows.insertId;
   } catch (e) {
     console.log('picModel insert error: ', e);
@@ -170,7 +170,7 @@ const insertMedia = async (req) => {
   }
 };
 
-// Delete any media
+// Delete any media and associated likes and comments
 const deleteMedia = async (pic_id) => {
   console.log('picModel deleteMedia pic_id: ', pic_id);
   try {

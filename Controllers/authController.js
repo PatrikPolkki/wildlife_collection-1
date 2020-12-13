@@ -5,7 +5,7 @@ const {validationResult} = require('express-validator');
 const userModel = require('../Models/userModel');
 const bcrypt = require('bcryptjs');
 
-// Controller for handling login
+// Handle login
 const login = (req, res) => {
   console.log(`authController login req.body: `, req.body);
   passport.authenticate('local', {session: false}, (err, user, info) => {
@@ -27,7 +27,7 @@ const login = (req, res) => {
   })(req, res);
 };
 
-// Controller for creating user
+// For creating user
 const user_create_post = async (req, res, next) => {
   // Extract the validation errors from a request.
   const errors = validationResult(req);
@@ -38,15 +38,19 @@ const user_create_post = async (req, res, next) => {
 
     const available = status === undefined ? true : false;
 
+    // Email was available
     if (available) {
+      // Check for errors in input
       if (!errors.isEmpty()) {
         console.log('user create error', errors);
         res.send(errors.array());
       } else {
-        //bcrypt password
+        // No errors
+        // bcrypt password
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(req.body.password, salt);
         req.body.password = hash;
+
         // Admin always defaults to 0
         req.body.admin = 0;
 
@@ -59,6 +63,7 @@ const user_create_post = async (req, res, next) => {
         }
       }
     } else {
+      // Email wasn't available
       res.json({Message: 'Email is already taken'});
     }
   } catch (e) {
@@ -66,7 +71,7 @@ const user_create_post = async (req, res, next) => {
   }
 };
 
-// Controller for handling logout
+// Handle logout
 const logout = (req, res) => {
   req.logout();
   res.json({message: 'logout'});

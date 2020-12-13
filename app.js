@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const passport = require('./Utils/pass');
 const rootRoute = require('./Routes/rootRoute');
 const picRoute = require('./Routes/picRoute');
-const videoRoute = require('./Routes/videoRoute');
 const userRoute = require('./Routes/userRoute');
 const authRoute = require('./Routes/authRoute');
 const likeRoute = require('./Routes/likeRoute');
@@ -42,7 +41,6 @@ app.use('/notokenpic', picRoute);
 app.use('/notokenlikes', noTokenLikeRoute);
 app.use('/notokencomments', commentRoute);
 app.use('/pic', passport.authenticate('jwt', {session: false}), picRoute);
-app.use('/video', passport.authenticate('jwt', {session: false}), videoRoute);
 app.use('/user', passport.authenticate('jwt', {session: false}), userRoute);
 app.use('/likes', passport.authenticate('jwt', {session: false}), likeRoute);
 app.use('/comments', passport.authenticate('jwt', {session: false}),

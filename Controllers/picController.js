@@ -6,19 +6,19 @@ const ImageMeta = require('../Utils/imageMeta');
 const {makeThumbnail} = require('../Utils/resize');
 const fs = require('fs');
 
-// Controller for getting all media
+// Get all media
 const media_list_get = async (req, res) => {
   const pics = await picModel.getAllMedia();
   await res.json(pics);
 };
 
-// Controller for getting all images
+// get all images
 const pic_list_get = async (req, res) => {
   const pics = await picModel.getAllPics();
   await res.json(pics);
 };
 
-// Controller for getting all videos
+// Get all videos
 const video_list_get = async (req, res) => {
   const pics = await picModel.getAllVideos();
   await res.json(pics);
@@ -41,7 +41,6 @@ const media_list_get_by_search = async (req, res) => {
 // Controller for Creating media
 const media_create = async (req, res) => {
   //here we will create a pic with data coming from req
-  //console.log('picContoller media_create', req.body, req.file, req.params.id);
   console.log('req.file: ', req.file);
 
   // Check if validation was passed without errors.
@@ -60,7 +59,7 @@ const media_create = async (req, res) => {
     return res.status(400).json({errors: errors.array()});
   }
 
-  //Add jwt payload user_id as part of body
+  //Add jwt user_id as part of body
   req.body.id = req.user.user_id;
 
   // Check if the image has any exifData
@@ -87,10 +86,12 @@ const media_create = async (req, res) => {
       req.body.dateTimeOriginal = null;
     }
   } else {
+    // No exif data
     req.body.coords = null;
     req.body.dateTimeOriginal = null;
   }
-  //get post_date = current time
+
+  //get post_date => current time
   let date = new Date();
   date = date.toISOString().split('T')[0] + ' '
       + date.toTimeString().split(' ')[0];
@@ -103,7 +104,7 @@ const media_create = async (req, res) => {
   }
 
   // Delete Uploaded file from machine if it is image, only Thumbnails are used anyways and now exif data is exctracted too.
-  // Videos will be kept
+  // Videos will be kept in Uploads
   if (req.file.mimetype.includes('image')) {
     try {
       fs.unlink(`Uploads/${req.file.filename}`, err => {
@@ -117,16 +118,16 @@ const media_create = async (req, res) => {
 
   // Insert pic
   const id = await picModel.insertMedia(req);
-  //Query for pic which was insterted
+  //Query for pic which was inserted
   const pic = await picModel.getMediaById(id);
   //...then send it
   res.send(pic);
 };
 
-// Controller to create thumbnails with sharp --> resize.js
+// Create thumbnails with sharp --> resize.js
 const make_thumbnail = async (req, res, next) => {
   console.log('make_thumbnail req.file.mimetype: ', req.file.mimetype);
-  //If the posted media is image and not video, create thumbnail and resize
+  // If the posted media is image and not video, create thumbnail and resize
   if (req.file.mimetype.includes('image')) {
     try {
       const ready = await makeThumbnail({width: 800, height: 800},
@@ -140,25 +141,28 @@ const make_thumbnail = async (req, res, next) => {
       //return res.status(400).json({errors: e.message});
       next();
     }
+    // Media was a video
   } else {
     next();
   }
 };
 
-// Controller for all content posted by user
+// Get all content posted by user
 const media_get_by_owner = async (req, res) => {
   console.log(`picController: http get pic with path param`, req.params);  //params -> id
   const media = await picModel.getMediaByOwner(req.user.user_id);
   await res.json(media);
 };
 
-// Controller for getting specified type of media
+// Get specified type of media of a user, path includes requested mediatype
 const chosen_media_get_by_owner = async (req, res) => {
 
   req.body.user_id = req.user.user_id;
 
+  // Request was of type image
   if (req.path.includes('image')) {
     req.body.mediatype = 'image';
+    // ... it was video
   } else {
     req.body.mediatype = 'video';
   }
@@ -166,7 +170,7 @@ const chosen_media_get_by_owner = async (req, res) => {
   await res.json(media);
 };
 
-// Send true if user is the owner of picture else send false
+// Send true if user is the owner of media, else send false
 const get_media_user_id = async (req, res) => {
   const mediaOwner = await picModel.getMediaUserId(req.params.pic_id);
   if (mediaOwner.user_id == req.user.user_id || req.user.admin == 1) {
@@ -176,29 +180,35 @@ const get_media_user_id = async (req, res) => {
   }
 };
 
-// Controller for deleting user media
+// Delete user media
 const media_delete = async (req, res) => {
-  // Check user_id of the pic (=owner)
+  // Check user_id of the media
   const mediaOwner = await picModel.getMediaUserId(req.params.pic_id);
   console.log('mediaOwner info, is there filename?: ', mediaOwner);
 
+  // mediaOwner user_id matches logged in user or logged in user is admin
   if (mediaOwner.user_id == req.user.user_id || req.user.admin == 1) {
 
     // Delete files from the machine too
     if (mediaOwner.mediatype === 'image') {
+      // mediatype was image
       fs.unlink(`Thumbnails/${mediaOwner.filename}`, err => {
         if (err) throw err;
         console.log(`Removing Thumbnails/${mediaOwner.filename}`);
       });
     } else {
+      // ... was a video
       fs.unlink(`Uploads/${mediaOwner.filename}`, err => {
         if (err) throw err;
         console.log(`Removing Uploads/${mediaOwner.filename}`);
       });
     }
+    // query to delete reference from db
     const picDeleted = await picModel.deleteMedia(req.params.pic_id);
     await res.json(picDeleted);
   }
+  //TODO: Handle wrong user... Shouldn't happen
+  await res.json({response: 'Wrong user'})
 };
 
 module.exports = {

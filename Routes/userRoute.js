@@ -13,4 +13,5 @@ router.get('/:id', userController.user_get_by_id);
 
 // Get currently logged user
 router.get('/check/userlogged', userController.check_username);
+
 module.exports = router;

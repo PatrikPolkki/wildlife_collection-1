@@ -1,6 +1,7 @@
 'use strict';
 const {ExifImage} = require('exif');
 
+// Check if there is any exifdata in an image
 const checkExifdata = (imgFile) => { // imgFile = full path to uploaded image
   return new Promise((resolve, reject) => {
     try {
@@ -20,6 +21,7 @@ const checkExifdata = (imgFile) => { // imgFile = full path to uploaded image
   });
 };
 
+// Get coordinates if they are in the exifdata
 const getCoordinates = (imgFile) => { // imgFile = full path to uploaded image
   return new Promise((resolve, reject) => {
     try {
@@ -59,6 +61,7 @@ const gpsToDecimal = (gpsData, hem) => {
   return (hem === 'S' || hem === 'W') ? d *= -1 : d;
 };
 
+// Get original photo taken time
 const getDateTimeOriginal = (imgFile) => { // imgFile = full path to uploaded image
   return new Promise((resolve, reject) => {
     try {

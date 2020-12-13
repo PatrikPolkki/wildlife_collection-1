@@ -37,7 +37,7 @@ const addComment = async (req) => {
   }
 };
 
-// Get owner of a pic
+// Get owner of a comment
 const getCommentUserId = async (comment_id) => {
   try {
     console.log('getCommentUserId');
