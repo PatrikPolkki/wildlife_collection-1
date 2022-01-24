@@ -20,6 +20,10 @@ Admin users have possibility to delete anything.
 
 Responsive design.
 
+## Features
+
+<img src="https://drive.google.com/drive/folders/12r5ZzEZdkxCeJVA-FobcHTEf4kuHJn4h" width="300"> <img src="https://drive.google.com/drive/folders/12r5ZzEZdkxCeJVA-FobcHTEf4kuHJn4h" width="600">
+
 ## Getting started
 
 #### Install dependencies
